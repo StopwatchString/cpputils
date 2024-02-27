@@ -1,11 +1,6 @@
 # Top-most EditorConfig file
 root = true
 
-# All files
 [*]
 indent_style = space
-# Specify the number of spaces per indentation level (e.g., 4 spaces)
 indent_size = 4
-
-# Make whitespace visible - this setting cannot be directly enforced through .editorconfig as of my last update. 
-# Visibility of whitespace is typically a feature of the editor itself and not controlled via EditorConfig.
