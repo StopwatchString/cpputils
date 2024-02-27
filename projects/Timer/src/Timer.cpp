@@ -14,8 +14,8 @@ Timer::~Timer()
 {
     if (_basicTimer) {
         endTime = std::chrono::high_resolution_clock::now();
-        NanosecondDuration duration = endTime - startTime;
-        std::cout << "INFO Timer::~Timer() Time Elapsed: " << duration.count() / 1000 << "(ms)" << std::endl;
+        SecondDuration duration = endTime - startTime;
+        std::cout << "INFO Timer::~Timer() Time Elapsed: " << duration.count() * 1000 << "(ms)" << std::endl;
     }
 }
 
@@ -29,15 +29,19 @@ void Timer::start()
     }
 }
 
-void Timer::stop()
+void Timer::stop(bool printToConsole)
 {
     if (!_basicTimer) {
         endTime = std::chrono::high_resolution_clock::now();
         timings.emplace_back(std::make_pair(startTime, endTime));
 
-        NanosecondDuration duration = endTime - startTime;
-        _sum_ms += duration.count() / 1000;
+        SecondDuration duration = endTime - startTime;
+        _sum_ms += duration.count() * 1000;
         _average_ms = _sum_ms / timings.size();
+
+        if (printToConsole) {
+            std::cout << duration.count() * 1000.0 << std::endl;
+        }
     }
     else {
         std::cerr << "WARNING Timer::stop() called while _basicTimer mode is enabled. Call ignored." << std::endl;
