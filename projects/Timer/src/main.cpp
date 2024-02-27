@@ -3,10 +3,10 @@
 
 int main()
 {
-	Timer t;
+    Timer t;
 
-	t.start();
-	t.stop();
+    t.start();
+    t.stop();
 
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
