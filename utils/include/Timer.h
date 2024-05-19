@@ -9,6 +9,9 @@ public:
     Timer() = default;
     Timer(int sampleWindowSize)
     {
+        if (sampleWindowSize < 1) {
+            sampleWindowSize = 1;
+        }
         _sampleWindowSize = sampleWindowSize;
     }
 
@@ -20,14 +23,14 @@ public:
 
     void start()
     {
-        _start = std::chrono::high_resolution_clock::now();
+        _start = std::chrono::steady_clock::now();
     }
 
     void stop()
     {
-        std::chrono::high_resolution_clock::time_point _end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsedTime = _end - _start;
-        double milliseconds = elapsedTime.count() * 1000;
+        std::chrono::steady_clock::time_point _end = std::chrono::steady_clock::now();
+        std::chrono::duration<__int64, std::ratio<1, 1000000000>> elapsedTimeNs = _end - _start;
+        double milliseconds = elapsedTimeNs.count() / 1000000.0;
         
         _last = milliseconds;
         _samples.push_back(_last);
@@ -120,7 +123,7 @@ public:
     }
 
 private:
-    std::chrono::high_resolution_clock::time_point _start;
+    std::chrono::steady_clock::time_point _start;
     std::vector<double> _samples;
     int  _sampleWindowSize       { 100 };
     double _last                 { 0.0 };
