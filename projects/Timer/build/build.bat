@@ -1,1 +1,0 @@
-..\..\shared-tools\premake5 vs2022

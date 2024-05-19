@@ -2,8 +2,8 @@
 --Put this in /${ProjectName}/build and run your premake command.
 
 --Customizable Entries--
-local solutionName = "Timer"
-local projectName = "Timer"
+local solutionName = "cpputils"
+local projectName = "cpputils"
 ------------------------
 
 local solutionLocation = ".."

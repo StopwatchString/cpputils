@@ -5,3 +5,5 @@ projects/Timer/bin
 *.vcxproj
 *.filters
 *.user
+utils/.vs
+utils/bin
