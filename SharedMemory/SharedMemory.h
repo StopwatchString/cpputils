@@ -65,7 +65,7 @@ public:
 #endif
     }
 
-    _DataType* getData()  { return (_DataType*)m_DataPointer; }
+    _DataType* data()     { return (_DataType*)m_DataPointer; }
     uint32_t size()       { return m_DataSize; }
     bool isOpen()         { return m_DataPointer != nullptr; }
 
@@ -135,7 +135,7 @@ public:
 #endif
     }
 
-    void* getData() { return m_DataPointer; }
+    void* data()    { return m_DataPointer; }
     uint32_t size() { return m_DataSize; }
     bool isOpen()   { return m_DataPointer != nullptr; }
 
