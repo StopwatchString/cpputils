@@ -93,9 +93,9 @@ void closeSharedMemory(SharedMemoryHandle& smh)
 #endif
 
 //#########################################################
-// SharedMemory General Template
+// SharedMemory
 //#########################################################
-template <typename _DataType = void>
+template <typename _DataType>
 class SharedMemory
 {
 public:
@@ -206,52 +206,17 @@ public:
         return *m_DataPointer;
     }
 
+    // Returns pointer to raw data, pretyped to template type
     _DataType* data()     { return m_DataPointer; }
+    // Returns size of SharedMemory in bytes
     uint32_t size()       { return m_DataSize; }
+    // Returns the key used to open this instance of shared memory
     std::string key()     { return m_DataKey; }
-    bool isOpen()         { return m_DataPointer != nullptr; }
 
 private:
-
     SharedMemoryHandle        m_SharedMemoryHandle {};
     std::string               m_DataKey            {};
     _DataType*                m_DataPointer        { nullptr };
     uint32_t                  m_DataSize           { sizeof(_DataType) };
 };
-
-//#########################################################
-// SharedMemory Void Template
-//#########################################################
-template<>
-class SharedMemory<>
-{
-public:
-    //---------------------------------------------------------
-    // Constructor
-    //---------------------------------------------------------
-    SharedMemory(const std::string& key, const uint32_t sizeBytes) : m_DataKey(key), m_DataSize(sizeBytes)
-    {
-        openSharedMemory(key, sizeBytes, m_SharedMemoryHandle);
-    }
-
-    //---------------------------------------------------------
-    // Destructor
-    //---------------------------------------------------------
-    ~SharedMemory()
-    {
-        closeSharedMemory(m_SharedMemoryHandle);
-    }
-
-    void* data()      { return m_SharedMemoryHandle.pData; }
-    uint32_t size()   { return m_DataSize; }
-    std::string key() { return m_DataKey; }
-    bool isOpen()     { return m_SharedMemoryHandle.pData != nullptr; }
-
-private:
-
-    SharedMemoryHandle m_SharedMemoryHandle{};
-    std::string        m_DataKey{};
-    uint32_t           m_DataSize{ 0 };
-};
-
 #endif
