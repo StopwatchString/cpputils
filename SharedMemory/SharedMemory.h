@@ -5,8 +5,8 @@
 #include <iostream>
 
 #ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
 #else
     //LINUX
 #endif
@@ -15,10 +15,85 @@ template <typename _DataType = void>
 class SharedMemory
 {
 public:
+    //---------------------------------------------------------
+    // Constructor
+    //---------------------------------------------------------
     SharedMemory(const std::string& key) : m_DataKey(key)
     {
+        openSharedMemory();
+    }
+
+    //---------------------------------------------------------
+    // Destructor
+    //---------------------------------------------------------
+    ~SharedMemory()
+    {
+        closeSharedMemory();
+    }
+
+    //---------------------------------------------------------
+    // operator+
+    //---------------------------------------------------------
+    _DataType operator+(const SharedMemory<_DataType>& other) const
+    {
+        return *m_DataPointer + *other.m_DataPointer;
+    }
+
+    //---------------------------------------------------------
+    // operator-
+    //---------------------------------------------------------
+    _DataType operator-(const SharedMemory<_DataType>& other) const
+    {
+        return *m_DataPointer - *other.m_DataPointer;
+    }
+
+    //---------------------------------------------------------
+    // operator*
+    //---------------------------------------------------------
+    _DataType operator*(const SharedMemory<_DataType>& other) const
+    {
+        return *m_DataPointer * *other.m_DataPointer;
+    }
+
+    //---------------------------------------------------------
+    // operator/
+    //---------------------------------------------------------
+    _DataType operator/(const SharedMemory<_DataType>& other) const
+    {
+        return *m_DataPointer / *other.m_DataPointer;
+    }
+
+    //---------------------------------------------------------
+    // operator=
+    //---------------------------------------------------------
+    SharedMemory<_DataType>& operator=(const _DataType& other)
+    {
+        *m_DataPointer = other;
+        return *this;
+    }
+
+    //---------------------------------------------------------
+    // operator=
+    //---------------------------------------------------------
+    SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>& other)
+    {
+        *m_DataPointer = *other.m_DataPointer;
+        return *this;
+    }
+
+    _DataType* data()     { return m_DataPointer; }
+    uint32_t size()       { return m_DataSize; }
+    std::string key()     { return m_DataKey; }
+    bool isOpen()         { return m_DataPointer != nullptr; }
+
+private:
+
+    //---------------------------------------------------------
+    // openSharedMemory()
+    //---------------------------------------------------------
+    void openSharedMemory()
+    {
 #ifdef WIN32
-        // Create or open the shared memory
         m_hMapFile = CreateFileMappingA(
             INVALID_HANDLE_VALUE,       // Use paging file
             NULL,                       // Default security
@@ -32,13 +107,13 @@ public:
             return;
         }
 
-        // Map the shared memory into the address space of our process
-        m_DataPointer = MapViewOfFile(
-            m_hMapFile,                   // Handle to map object
+        void* hMapView = MapViewOfFile(
+            m_hMapFile,                 // Handle to map object
             FILE_MAP_ALL_ACCESS,        // Read/write permission
             0,                          // Offset high
             0,                          // Offset low
-            m_DataSize);         // Number of bytes to map
+            m_DataSize);                // Number of bytes to map
+        m_DataPointer = reinterpret_cast<_DataType*>(hMapView);
 
         if (m_DataPointer == nullptr) {
             std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
@@ -46,30 +121,30 @@ public:
             return;
         }
 #else
-    //LINUX
+        //LINUX
 #endif
     }
 
-    ~SharedMemory()
+    //---------------------------------------------------------
+    // closeSharedMemory()
+    //---------------------------------------------------------
+    void closeSharedMemory()
     {
 #ifdef WIN32
         if (m_DataPointer != nullptr) {
             UnmapViewOfFile(m_DataPointer);
+            m_DataPointer = nullptr;
         }
 
         if (m_hMapFile != 0) {
             CloseHandle(m_hMapFile);
+            m_hMapFile = 0;
         }
 #else
-    //LINUX
+        //LINUX
 #endif
     }
 
-    _DataType* data()     { return (_DataType*)m_DataPointer; }
-    uint32_t size()       { return m_DataSize; }
-    bool isOpen()         { return m_DataPointer != nullptr; }
-
-private:
 #ifdef WIN32
     HANDLE      m_hMapFile    { 0 };
 #else
@@ -77,7 +152,7 @@ private:
 #endif
 
     std::string               m_DataKey     {};
-    void*                     m_DataPointer { nullptr };
+    _DataType*                m_DataPointer { nullptr };
     static constexpr uint32_t m_DataSize{ sizeof(_DataType) };
 };
 
@@ -85,10 +160,34 @@ template<>
 class SharedMemory<>
 {
 public:
+    //---------------------------------------------------------
+    // Constructor
+    //---------------------------------------------------------
     SharedMemory(const std::string& key, const uint32_t sizeBytes) : m_DataKey(key), m_DataSize(sizeBytes)
     {
+        openSharedMemory();
+    }
+
+    //---------------------------------------------------------
+    // Constructor
+    //---------------------------------------------------------
+    ~SharedMemory()
+    {
+        closeSharedMemory();
+    }
+
+    void* data()    { return m_DataPointer; }
+    uint32_t size() { return m_DataSize; }
+    bool isOpen()   { return m_DataPointer != nullptr; }
+
+private:
+
+    //---------------------------------------------------------
+    // openSharedMemory()
+    //---------------------------------------------------------
+    void openSharedMemory()
+    {
 #ifdef WIN32
-        // Create or open the shared memory
         m_hMapFile = CreateFileMappingA(
             INVALID_HANDLE_VALUE,       // Use paging file
             NULL,                       // Default security
@@ -102,13 +201,12 @@ public:
             return;
         }
 
-        // Map the shared memory into the address space of our process
         m_DataPointer = MapViewOfFile(
-            m_hMapFile,                   // Handle to map object
+            m_hMapFile,                 // Handle to map object
             FILE_MAP_ALL_ACCESS,        // Read/write permission
             0,                          // Offset high
             0,                          // Offset low
-            m_DataSize);         // Number of bytes to map
+            m_DataSize);                // Number of bytes to map
 
         if (m_DataPointer == nullptr) {
             std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
@@ -116,30 +214,30 @@ public:
             return;
         }
 #else
-    //LINUX
+        //LINUX
 #endif
     }
 
-    ~SharedMemory()
+    //---------------------------------------------------------
+    // closeSharedMemory()
+    //---------------------------------------------------------
+    void closeSharedMemory()
     {
 #ifdef WIN32
         if (m_DataPointer != nullptr) {
             UnmapViewOfFile(m_DataPointer);
+            m_DataPointer = nullptr;
         }
 
         if (m_hMapFile != 0) {
             CloseHandle(m_hMapFile);
+            m_hMapFile = 0;
         }
 #else
-    //LINUX
+        //LINUX
 #endif
     }
 
-    void* data()    { return m_DataPointer; }
-    uint32_t size() { return m_DataSize; }
-    bool isOpen()   { return m_DataPointer != nullptr; }
-
-private:
 #ifdef WIN32
     HANDLE      m_hMapFile{ 0 };
 #else
