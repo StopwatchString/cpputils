@@ -140,7 +140,7 @@ public:
     //---------------------------------------------------------
     // Move Constructor
     //---------------------------------------------------------
-    SharedMemory(SharedMemory<_DataType>&& other)
+    SharedMemory(SharedMemory<_DataType>&& other) noexcept
     {
         // Initialize Members
         m_DataKey = other.m_DataKey;
@@ -282,7 +282,7 @@ public:
     //---------------------------------------------------------
     // Move Constructor
     //---------------------------------------------------------
-    SharedMemory(SharedMemory<void>&& other)
+    SharedMemory(SharedMemory<void>&& other) noexcept
     {
         // Initialize Members
         m_DataKey = other.m_DataKey;
