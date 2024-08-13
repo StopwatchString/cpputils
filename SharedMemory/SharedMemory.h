@@ -191,6 +191,8 @@ public:
             other.m_DataKey = "";
             other.m_DataSize = 0;
             other.m_SharedMemoryHandle = SharedMemoryHandle();
+            
+            // No need to initialize shared memory since we take control of other's handles.
         }
 
         return *this;
@@ -335,6 +337,8 @@ public:
             other.m_DataKey = "";
             other.m_DataSize = 0;
             other.m_SharedMemoryHandle = SharedMemoryHandle();
+
+            // No need to initialize shared memory since we take control of other's handles.
         }
 
         return *this;
