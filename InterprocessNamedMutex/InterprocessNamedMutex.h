@@ -64,9 +64,7 @@ public:
 
     bool tryLock()
     {
-        if (platformTryLockMutex(m_SharedMutexHandle)) {
-            m_Locked = true;
-        }
+        m_Locked = platformTryLockMutex(m_SharedMutexHandle);
         return m_Locked;
     }
 
