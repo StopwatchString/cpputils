@@ -15,6 +15,13 @@ Two main modes:
   - operator-> overloaded for direct member access on types with members
   - Still supports direct access to raw memory
 
+TODO
+
+- Linux Implementation
+- Extra functionality baked into SharedMemory allocation
+  - refcounting: lookup number of SharedMemory handles opened on the current key
+  - NamedMutex: Implement Windows/Linux interprocess mutex class then use it to allow for lock()/unlock()/trylock() impl
+
 Currently only implemented for Windows, Linux support soon.
 
 ### Untyped
