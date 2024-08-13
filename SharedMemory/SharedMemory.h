@@ -118,7 +118,7 @@ public:
     //---------------------------------------------------------
     // Copy Constructor
     //---------------------------------------------------------
-    SharedMemory(const SharedMemory<_DataType>& other) : m_DataKey(other.m_DataKey)
+    SharedMemory(const SharedMemory<_DataType>& other) : m_DataKey(other.m_DataKey), m_DataSize(sizeof(_DataType))
     {
         openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
         // No need to copy underlying data since we're opening the same shared memory address.
@@ -127,16 +127,14 @@ public:
     //---------------------------------------------------------
     // Move Constructor
     //---------------------------------------------------------
-    SharedMemory(SharedMemory<_DataType>&& other) : m_DataKey(other.m_DataKey)
+    SharedMemory(SharedMemory<_DataType>&& other) : m_DataKey(other.m_DataKey), m_DataSize(sizeof(_DataType))
     {
         // Manage ourselves first to guarantee SharedMemory lives
-        closeSharedMemory(m_SharedMemoryHandle);
         openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
         // Clean up other class
         closeSharedMemory(other.m_SharedMemoryHandle);
         other.m_DataKey = "";
-        other.m_DataPointer = nullptr;
         other.m_DataSize = 0;
     }
 
@@ -163,6 +161,7 @@ public:
         if (this != &other) {
             // Manage ourselves first to guarantee SharedMemory lives
             closeSharedMemory(m_SharedMemoryHandle);
+            m_DataKey = other.m_DataKey;
             openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
             // Clean up other class
@@ -186,7 +185,7 @@ public:
     //---------------------------------------------------------
     // operator->
     //---------------------------------------------------------
-    _DataType* operator->()
+    _DataType* operator->() const
     {
         return static_cast<_DataType*>(m_SharedMemoryHandle.pData);
     }
@@ -201,14 +200,14 @@ public:
 
     // Returns pointer to raw data, pretyped to template type
     _DataType* data()     { return static_cast<_DataType*>(m_SharedMemoryHandle.pData); }
-    // Returns size of SharedMemory in bytes
-    uint32_t size()       { return m_DataSize; }
     // Returns the key used to open this instance of shared memory
     std::string key()     { return m_DataKey; }
+    // Returns size of SharedMemory in bytes
+    uint32_t size()       { return m_DataSize; }
 
 private:
-    SharedMemoryHandle        m_SharedMemoryHandle {};
-    std::string               m_DataKey            {};
+    SharedMemoryHandle        m_SharedMemoryHandle { NULL, nullptr };
+    std::string               m_DataKey            { "" };
     uint32_t                  m_DataSize           { 0 };
 };
 #endif
