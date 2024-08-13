@@ -26,8 +26,8 @@ struct SharedMemoryHandle;
 #endif
 
 // Forward declare functions which will be implemented per-platform at end of file
-void platformOpenSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle);
-void platformCloseSharedMemory(SharedMemoryHandle& smh);
+void platformAcquireSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle);
+void platformReleaseSharedMemory(SharedMemoryHandle& smh);
 
 //#########################################################
 // SharedMemory Generic Template
@@ -47,7 +47,7 @@ public:
         m_SharedMemoryHandle = SharedMemoryHandle();
 
         // Initialize Based on Members
-        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
     }
 
     //---------------------------------------------------------
@@ -55,7 +55,7 @@ public:
     //---------------------------------------------------------
     ~SharedMemory()
     {
-        platformCloseSharedMemory(m_SharedMemoryHandle);
+        platformReleaseSharedMemory(m_SharedMemoryHandle);
     }
 
     //---------------------------------------------------------
@@ -69,7 +69,7 @@ public:
         m_SharedMemoryHandle = SharedMemoryHandle();
 
         // Initialize Based on Members
-        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
         // No need to copy underlying data since we're opening the same shared memory address.
     }
@@ -98,13 +98,13 @@ public:
     SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>& other)
     {
         // Clean up our resources
-        platformCloseSharedMemory(m_SharedMemoryHandle);
+        platformReleaseSharedMemory(m_SharedMemoryHandle);
 
         // Initialize Members
         m_DataKey = other.m_DataKey;
 
         // Initialize Based on Members
-        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
         // No need to copy underlying data since we're opening the same shared memory address.
 
@@ -118,7 +118,7 @@ public:
     {
         if (this != &other) {
             // Clean up our resources
-            platformCloseSharedMemory(m_SharedMemoryHandle);
+            platformReleaseSharedMemory(m_SharedMemoryHandle);
 
             // Initialize Members
             m_DataKey = other.m_DataKey;
@@ -191,7 +191,7 @@ public:
         m_SharedMemoryHandle = SharedMemoryHandle();
 
         // Initialize Based on Members
-        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
     }
 
     //---------------------------------------------------------
@@ -199,7 +199,7 @@ public:
     //---------------------------------------------------------
     ~SharedMemory()
     {
-        platformCloseSharedMemory(m_SharedMemoryHandle);
+        platformReleaseSharedMemory(m_SharedMemoryHandle);
     }
 
     //---------------------------------------------------------
@@ -213,7 +213,7 @@ public:
         m_SharedMemoryHandle = SharedMemoryHandle();
 
         // Initialize Based on Members
-        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
         // No need to copy underlying data since we're opening the same shared memory address.
     }
@@ -242,14 +242,14 @@ public:
     SharedMemory<void>& operator=(const SharedMemory<void>& other)
     {
         // Clean up our resources
-        platformCloseSharedMemory(m_SharedMemoryHandle);
+        platformReleaseSharedMemory(m_SharedMemoryHandle);
 
         // Initialize Members
         m_DataKey = other.m_DataKey;
         m_DataSize = other.m_DataSize;
 
         // Initialize Based on Members
-        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
         // No need to copy underlying data since we're opening the same shared memory address.
 
@@ -263,7 +263,7 @@ public:
     {
         if (this != &other) {
             // Clean up our resources
-            platformCloseSharedMemory(m_SharedMemoryHandle);
+            platformReleaseSharedMemory(m_SharedMemoryHandle);
 
             // Initialize Members
             m_DataKey = other.m_DataKey;
@@ -300,9 +300,9 @@ private:
 //#########################################################
 
 //---------------------------------------------------------
-// platformOpenSharedMemory
+// platformAcquireSharedMemory
 //---------------------------------------------------------
-void platformOpenSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
+void platformAcquireSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
 {
     sharedMemoryHandle.hMapFile = CreateFileMappingA(
         INVALID_HANDLE_VALUE,         // Use paging file
@@ -332,9 +332,9 @@ void platformOpenSharedMemory(const std::string& key, const uint32_t sizeBytes, 
 }
 
 //---------------------------------------------------------
-// platformCloseSharedMemory
+// platformReleaseSharedMemory
 //---------------------------------------------------------
-void platformCloseSharedMemory(SharedMemoryHandle& smh)
+void platformReleaseSharedMemory(SharedMemoryHandle& smh)
 {
     if (smh.pData != nullptr) {
         UnmapViewOfFile(smh.pData);
@@ -353,16 +353,16 @@ void platformCloseSharedMemory(SharedMemoryHandle& smh)
 //#########################################################
 
 //---------------------------------------------------------
-// platformOpenSharedMemory
+// platformAcquireSharedMemory
 //---------------------------------------------------------
-void platformOpenSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
+void platformAcquireSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
 {
 }
 
 //---------------------------------------------------------
-// platformCloseSharedMemory
+// platformReleaseSharedMemory
 //---------------------------------------------------------
-void platformCloseSharedMemory(SharedMemoryHandle& smh)
+void platformReleaseSharedMemory(SharedMemoryHandle& smh)
 {
 }
 #endif
