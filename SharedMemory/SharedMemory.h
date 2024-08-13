@@ -93,9 +93,9 @@ void closeSharedMemory(SharedMemoryHandle& smh)
 #endif
 
 //#########################################################
-// SharedMemory
+// SharedMemory Generic Template
 //#########################################################
-template <typename _DataType>
+template <typename _DataType = void>
 class SharedMemory
 {
 public:
@@ -232,5 +232,124 @@ private:
     std::string               m_DataKey            {};
     uint32_t                  m_DataSize           { 0 };
     SharedMemoryHandle        m_SharedMemoryHandle {};
+};
+
+//#########################################################
+// SharedMemory Void Template
+//#########################################################
+template <>
+class SharedMemory<>
+{
+public:
+    //---------------------------------------------------------
+    // Constructor
+    //---------------------------------------------------------
+    SharedMemory(const std::string& key, const uint32_t sizeBytes)
+    {
+        // Initialize Members
+        m_DataKey = key;
+        m_DataSize = sizeBytes;
+        m_SharedMemoryHandle = SharedMemoryHandle();
+
+        // Initialize Based on Members
+        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+    }
+
+    //---------------------------------------------------------
+    // Destructor
+    //---------------------------------------------------------
+    ~SharedMemory()
+    {
+        closeSharedMemory(m_SharedMemoryHandle);
+    }
+
+    //---------------------------------------------------------
+    // Copy Constructor
+    //---------------------------------------------------------
+    SharedMemory(const SharedMemory<void>& other)
+    {
+        // Initialize Members
+        m_DataKey = other.m_DataKey;
+        m_DataSize = other.m_DataSize;
+        m_SharedMemoryHandle = SharedMemoryHandle();
+
+        // Initialize Based on Members
+        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+
+        // No need to copy underlying data since we're opening the same shared memory address.
+    }
+
+    //---------------------------------------------------------
+    // Move Constructor
+    //---------------------------------------------------------
+    SharedMemory(SharedMemory<void>&& other)
+    {
+        // Initialize Members
+        m_DataKey = other.m_DataKey;
+        m_DataSize = other.m_DataSize;
+        m_SharedMemoryHandle = other.m_SharedMemoryHandle;
+
+        // Clean up other class
+        other.m_DataKey = "";
+        other.m_DataSize = 0;
+        other.m_SharedMemoryHandle = SharedMemoryHandle();
+
+        // No need to initialize shared memory since we take control of other's handles.
+    }
+
+    //---------------------------------------------------------
+    // operator= Copy
+    //---------------------------------------------------------
+    SharedMemory<void>& operator=(const SharedMemory<void>& other)
+    {
+        // Clean up our resources
+        closeSharedMemory(m_SharedMemoryHandle);
+
+        // Initialize Members
+        m_DataKey = other.m_DataKey;
+        m_DataSize = other.m_DataSize;
+
+        // Initialize Based on Members
+        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+
+        // No need to copy underlying data since we're opening the same shared memory address.
+
+        return *this;
+    }
+
+    //---------------------------------------------------------
+    // operator= Move
+    //---------------------------------------------------------
+    SharedMemory<void>& operator=(SharedMemory<void>&& other) noexcept
+    {
+        if (this != &other) {
+            // Clean up our resources
+            closeSharedMemory(m_SharedMemoryHandle);
+
+            // Initialize Members
+            m_DataKey = other.m_DataKey;
+            m_DataSize = other.m_DataSize;
+            m_SharedMemoryHandle = other.m_SharedMemoryHandle;
+
+            // Clean up other class
+            other.m_DataKey = "";
+            other.m_DataSize = 0;
+            other.m_SharedMemoryHandle = SharedMemoryHandle();
+        }
+
+        return *this;
+    }
+
+    // Returns pointer to raw data, pretyped to template type
+    void* data() { return m_SharedMemoryHandle.pData; }
+    // Returns the key used to open this instance of shared memory
+    std::string key() { return m_DataKey; }
+    // Returns size of SharedMemory in bytes
+    uint32_t size() { return m_DataSize; }
+
+private:
+    std::string               m_DataKey{};
+    uint32_t                  m_DataSize{ 0 };
+    SharedMemoryHandle        m_SharedMemoryHandle{};
 };
 #endif
