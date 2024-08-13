@@ -73,6 +73,22 @@ public:
     }
 
     //---------------------------------------------------------
+    // operator->
+    //---------------------------------------------------------
+    _DataType* operator->()
+    {
+        return m_DataPointer;
+    }
+
+    //---------------------------------------------------------
+    // operator cast to _DataType
+    //---------------------------------------------------------
+    operator _DataType() const
+    {
+        return *m_DataPointer;
+    }
+
+    //---------------------------------------------------------
     // operator=
     //---------------------------------------------------------
     SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>& other)
@@ -176,9 +192,10 @@ public:
         closeSharedMemory();
     }
 
-    void* data()    { return m_DataPointer; }
-    uint32_t size() { return m_DataSize; }
-    bool isOpen()   { return m_DataPointer != nullptr; }
+    void* data()      { return m_DataPointer; }
+    uint32_t size()   { return m_DataSize; }
+    std::string key() { return m_DataKey; }
+    bool isOpen()     { return m_DataPointer != nullptr; }
 
 private:
 
