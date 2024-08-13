@@ -11,6 +11,9 @@
     //LINUX
 #endif
 
+//---------------------------------------------------------
+// Generic Template
+//---------------------------------------------------------
 template <typename _DataType = void>
 class SharedMemory
 {
@@ -32,20 +35,66 @@ public:
     }
 
     //---------------------------------------------------------
-    // operator=
+    // Copy Constructor
     //---------------------------------------------------------
-    SharedMemory<_DataType>& operator=(const _DataType& other)
+    SharedMemory(const SharedMemory<_DataType>& other) : m_DataKey(other.m_DataKey)
     {
-        *m_DataPointer = other;
-        return *this;
+        openSharedMemory();
+        // No need to copy underlying data since we're opening the same shared memory address.
     }
 
     //---------------------------------------------------------
-    // operator=
+    // Move Constructor
+    //---------------------------------------------------------
+    SharedMemory(SharedMemory<_DataType>&& other)
+    {
+        closeSharedMemory();
+        m_DataKey = other.m_DataKey;
+        openSharedMemory();
+
+        // Close the other's handles for it
+#ifdef WIN32
+        if (other.m_DataPointer != nullptr) {
+            UnmapViewOfFile(other.m_DataPointer);
+            other.m_DataPointer = nullptr;
+        }
+
+        if (other.m_hMapFile != 0) {
+            CloseHandle(other.m_hMapFile);
+            other.m_hMapFile = 0;
+        }
+#else
+        //LINUX
+#endif
+        other.m_DataKey = "";
+        other.m_DataSize = 0;
+        std::cout << "Moved!" << std::endl;
+    }
+
+    //---------------------------------------------------------
+    // operator= Copy
     //---------------------------------------------------------
     SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>& other)
     {
         *m_DataPointer = *other.m_DataPointer;
+        return *this;
+    }
+
+    //---------------------------------------------------------
+    // operator= Move
+    //---------------------------------------------------------
+    //SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>&& other)
+    //{
+    //    *m_DataPointer = other;
+    //    return *this;
+    //}
+
+    //---------------------------------------------------------
+    // operator= Special case
+    //---------------------------------------------------------
+    SharedMemory<_DataType>& operator=(const _DataType& other)
+    {
+        *m_DataPointer = other;
         return *this;
     }
 
@@ -71,7 +120,6 @@ public:
     bool isOpen()         { return m_DataPointer != nullptr; }
 
 private:
-
     //---------------------------------------------------------
     // openSharedMemory()
     //---------------------------------------------------------
@@ -137,9 +185,13 @@ private:
 
     std::string               m_DataKey     {};
     _DataType*                m_DataPointer { nullptr };
-    static constexpr uint32_t m_DataSize{ sizeof(_DataType) };
+    uint32_t                  m_DataSize    { sizeof(_DataType) };
 };
 
+
+//---------------------------------------------------------
+// Void Template
+//---------------------------------------------------------
 template<>
 class SharedMemory<>
 {
@@ -231,7 +283,7 @@ private:
 
     std::string    m_DataKey{};
     void*          m_DataPointer{ nullptr };
-    const uint32_t m_DataSize{ 0 };
+    uint32_t       m_DataSize{ 0 };
 };
 
 #endif
