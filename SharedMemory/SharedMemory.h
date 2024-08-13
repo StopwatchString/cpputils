@@ -102,10 +102,9 @@ public:
     //---------------------------------------------------------
     // Constructor
     //---------------------------------------------------------
-    SharedMemory(const std::string& key) : m_DataKey(key)
+    SharedMemory(const std::string& key) : m_DataKey(key), m_DataSize(sizeof(_DataType))
     {
         openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
-        m_DataPointer = static_cast<_DataType*>(m_SharedMemoryHandle.pData);
     }
 
     //---------------------------------------------------------
@@ -122,7 +121,6 @@ public:
     SharedMemory(const SharedMemory<_DataType>& other) : m_DataKey(other.m_DataKey)
     {
         openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
-        m_DataPointer = static_cast<_DataType*>(m_SharedMemoryHandle.pData);
         // No need to copy underlying data since we're opening the same shared memory address.
     }
 
@@ -134,7 +132,6 @@ public:
         // Manage ourselves first to guarantee SharedMemory lives
         closeSharedMemory(m_SharedMemoryHandle);
         openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
-        m_DataPointer = static_cast<_DataType*>(m_SharedMemoryHandle.pData);
 
         // Clean up other class
         closeSharedMemory(other.m_SharedMemoryHandle);
@@ -154,7 +151,6 @@ public:
         // Set up based on new resources
         m_DataKey = other.m_DataKey;
         openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
-        m_DataPointer = static_cast<_DataType*>(m_SharedMemoryHandle.pData);
 
         return *this;
     }
@@ -167,14 +163,11 @@ public:
         if (this != &other) {
             // Manage ourselves first to guarantee SharedMemory lives
             closeSharedMemory(m_SharedMemoryHandle);
-            m_DataPointer = nullptr;
             openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
-            m_DataPointer = static_cast<_DataType*>(m_SharedMemoryHandle.pData);
 
             // Clean up other class
             closeSharedMemory(other.m_SharedMemoryHandle);
             other.m_DataKey = "";
-            other.m_DataPointer = nullptr;
             other.m_DataSize = 0;
         }
 
@@ -186,7 +179,7 @@ public:
     //---------------------------------------------------------
     SharedMemory<_DataType>& operator=(const _DataType& other)
     {
-        *m_DataPointer = other;
+        *static_cast<_DataType*>(m_SharedMemoryHandle.pData) = other;
         return *this;
     }
 
@@ -195,7 +188,7 @@ public:
     //---------------------------------------------------------
     _DataType* operator->()
     {
-        return m_DataPointer;
+        return static_cast<_DataType*>(m_SharedMemoryHandle.pData);
     }
 
     //---------------------------------------------------------
@@ -203,11 +196,11 @@ public:
     //---------------------------------------------------------
     operator _DataType() const
     {
-        return *m_DataPointer;
+        return *static_cast<_DataType*>(m_SharedMemoryHandle.pData);
     }
 
     // Returns pointer to raw data, pretyped to template type
-    _DataType* data()     { return m_DataPointer; }
+    _DataType* data()     { return static_cast<_DataType*>(m_SharedMemoryHandle.pData); }
     // Returns size of SharedMemory in bytes
     uint32_t size()       { return m_DataSize; }
     // Returns the key used to open this instance of shared memory
@@ -216,7 +209,6 @@ public:
 private:
     SharedMemoryHandle        m_SharedMemoryHandle {};
     std::string               m_DataKey            {};
-    _DataType*                m_DataPointer        { nullptr };
-    uint32_t                  m_DataSize           { sizeof(_DataType) };
+    uint32_t                  m_DataSize           { 0 };
 };
 #endif
