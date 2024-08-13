@@ -4,19 +4,17 @@
 #include <string>
 #include <iostream>
 
-// Windows vs Linux Include
 #ifdef WIN32
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-#else
-    //LINUX
-#endif
+//#########################################################
+// Windows Shared Memory Interface
+//#########################################################
 
-// Windows vs Linux Implementation
-#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 struct SharedMemoryHandle
 {
-    HANDLE hMapFile = 0;
+    HANDLE hMapFile = NULL;
     void* pData = nullptr;
 };
 
@@ -26,28 +24,29 @@ struct SharedMemoryHandle
 void openSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
 {
     sharedMemoryHandle.hMapFile = CreateFileMappingA(
-        INVALID_HANDLE_VALUE,       // Use paging file
-        NULL,                       // Default security
-        PAGE_READWRITE,             // Read/write access
-        0,                          // Maximum object size (high-order DWORD)
-        sizeBytes,                  // Maximum object size (low-order DWORD)
-        key.c_str());               // Name of mapping object
+        INVALID_HANDLE_VALUE,         // Use paging file
+        NULL,                         // Default security
+        PAGE_READWRITE,               // Read/write access
+        0,                            // Maximum object size (high-order DWORD)
+        sizeBytes,                    // Maximum object size (low-order DWORD)
+        key.c_str());                 // Name of mapping object
 
     if (sharedMemoryHandle.hMapFile == NULL) {
         std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
+        return;
     }
 
     sharedMemoryHandle.pData = MapViewOfFile(
-        sharedMemoryHandle.hMapFile,               // Handle to map object
-        FILE_MAP_ALL_ACCESS,        // Read/write permission
-        0,                          // Offset high
-        0,                          // Offset low
-        sizeBytes);                 // Number of bytes to map
+        sharedMemoryHandle.hMapFile,  // Handle to map object
+        FILE_MAP_ALL_ACCESS,          // Read/write permission
+        0,                            // Offset high
+        0,                            // Offset low
+        sizeBytes);                   // Number of bytes to map
 
     if (sharedMemoryHandle.pData == nullptr) {
         std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
         CloseHandle(sharedMemoryHandle.hMapFile);
-        sharedMemoryHandle.hMapFile = 0;
+        sharedMemoryHandle.hMapFile = NULL;
     }
 }
 
@@ -61,18 +60,41 @@ void closeSharedMemory(SharedMemoryHandle& smh)
         smh.pData = nullptr;
     }
 
-    if (smh.hMapFile != 0) {
+    if (smh.hMapFile != NULL) {
         CloseHandle(smh.hMapFile);
-        smh.hMapFile = 0;
+        smh.hMapFile = NULL;
     }
 }
+
 #else
-    //LINUX
-#endif
+//#########################################################
+// Linux Shared Memory Interface
+//#########################################################
+
+struct SharedMemoryHandle
+{
+    void* pData = nullptr;
+};
 
 //---------------------------------------------------------
-// Generic Template
+// openSharedMemory
 //---------------------------------------------------------
+void openSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
+{
+}
+
+//---------------------------------------------------------
+// closeSharedMemory
+//---------------------------------------------------------
+void closeSharedMemory(SharedMemoryHandle& smh)
+{
+}
+
+#endif
+
+//#########################################################
+// SharedMemory General Template
+//#########################################################
 template <typename _DataType = void>
 class SharedMemory
 {
@@ -126,18 +148,38 @@ public:
     //---------------------------------------------------------
     SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>& other)
     {
-        *m_DataPointer = *other.m_DataPointer;
+        // Clean up our resources
+        closeSharedMemory(m_SharedMemoryHandle);
+
+        // Set up based on new resources
+        m_DataKey = other.m_DataKey;
+        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        m_DataPointer = static_cast<_DataType*>(m_SharedMemoryHandle.pData);
+
         return *this;
     }
 
     //---------------------------------------------------------
     // operator= Move
     //---------------------------------------------------------
-    //SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>&& other)
-    //{
-    //    *m_DataPointer = other;
-    //    return *this;
-    //}
+    SharedMemory<_DataType>& operator=(SharedMemory<_DataType>&& other) noexcept
+    {
+        if (this != &other) {
+            // Manage ourselves first to guarantee SharedMemory lives
+            closeSharedMemory(m_SharedMemoryHandle);
+            m_DataPointer = nullptr;
+            openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+            m_DataPointer = static_cast<_DataType*>(m_SharedMemoryHandle.pData);
+
+            // Clean up other class
+            closeSharedMemory(other.m_SharedMemoryHandle);
+            other.m_DataKey = "";
+            other.m_DataPointer = nullptr;
+            other.m_DataSize = 0;
+        }
+
+        return *this;
+    }
 
     //---------------------------------------------------------
     // operator= Special case
@@ -177,10 +219,9 @@ private:
     uint32_t                  m_DataSize           { sizeof(_DataType) };
 };
 
-
-//---------------------------------------------------------
-// Void Template
-//---------------------------------------------------------
+//#########################################################
+// SharedMemory Void Template
+//#########################################################
 template<>
 class SharedMemory<>
 {
