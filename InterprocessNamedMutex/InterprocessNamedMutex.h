@@ -8,13 +8,13 @@
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
-    struct SharedMutexHandle
+    struct NamedMutexHandle
     {
         HANDLE hMutex{ 0 };
     };
 #elif defined(__linux__)
 
-    struct SharedMutexHandle
+    struct NamedMutexHandle
     {
 
     };
@@ -23,17 +23,17 @@
 #endif
 
 // Forward declare functions which will be implemented per-platform
-struct SharedMutexHandle;
-bool platformAcquireMutexHandle(SharedMutexHandle& handle, const std::string& key);
-bool platformReleaseMutexHandle(SharedMutexHandle& handle);
-void platformLockMutex(SharedMutexHandle& handle);
-void platformUnlockMutex(SharedMutexHandle& handle);
-bool platformTryLockMutex(SharedMutexHandle& handle);
+struct NamedMutexHandle;
+bool platformAcquireMutexHandle(NamedMutexHandle& handle, const std::string& key);
+bool platformReleaseMutexHandle(NamedMutexHandle& handle);
+void platformLockMutex(NamedMutexHandle& handle);
+void platformUnlockMutex(NamedMutexHandle& handle);
+bool platformTryLockMutex(NamedMutexHandle& handle);
 
-class InterprocessSharedMutex
+class InterprocessNamedMutex
 {
 public:
-    InterprocessSharedMutex(const std::string& key)
+    InterprocessNamedMutex(const std::string& key)
     {
         // Initialize Members
         m_MutexKey = key;
@@ -42,7 +42,7 @@ public:
         platformAcquireMutexHandle(m_SharedMutexHandle, m_MutexKey);
     }
 
-    ~InterprocessSharedMutex()
+    ~InterprocessNamedMutex()
     {
         if (m_Locked) {
             platformUnlockMutex(m_SharedMutexHandle);
@@ -76,7 +76,7 @@ public:
 private:
     std::string m_MutexKey;
     bool m_Locked                           { false };
-    SharedMutexHandle m_SharedMutexHandle   {};
+    NamedMutexHandle m_SharedMutexHandle   {};
 };
 
 #ifdef _WIN32
@@ -84,7 +84,7 @@ private:
 // Windows Platform Implementation
 //#########################################################
 
-bool platformAcquireMutexHandle(SharedMutexHandle& handle, const std::string& key)
+bool platformAcquireMutexHandle(NamedMutexHandle& handle, const std::string& key)
 {
 
     if (key.length() > MAX_PATH) {
@@ -96,7 +96,7 @@ bool platformAcquireMutexHandle(SharedMutexHandle& handle, const std::string& ke
     return handle.hMutex != NULL;
 }
 
-bool platformReleaseMutexHandle(SharedMutexHandle& handle)
+bool platformReleaseMutexHandle(NamedMutexHandle& handle)
 {
     bool retVal = true;
     if (handle.hMutex != NULL) {
@@ -106,17 +106,17 @@ bool platformReleaseMutexHandle(SharedMutexHandle& handle)
     return retVal;
 }
 
-void platformLockMutex(SharedMutexHandle& handle)
+void platformLockMutex(NamedMutexHandle& handle)
 {
     WaitForSingleObject(handle.hMutex, INFINITE);
 }
 
-void platformUnlockMutex(SharedMutexHandle& handle)
+void platformUnlockMutex(NamedMutexHandle& handle)
 {
     ReleaseMutex(handle.hMutex);
 }
 
-bool platformTryLockMutex(SharedMutexHandle& handle)
+bool platformTryLockMutex(NamedMutexHandle& handle)
 {
     return WaitForSingleObject(handle.hMutex, 0) == WAIT_OBJECT_0;
 }
@@ -126,22 +126,22 @@ bool platformTryLockMutex(SharedMutexHandle& handle)
 // Linux Platform Implementation
 //#########################################################
 
-void platformAcquireMutexHandle(const std::string& key, SharedMutexHandle& handle)
+void platformAcquireMutexHandle(const std::string& key, NamedMutexHandle& handle)
 {
     return false;
 }
 
-void platformReleaseMutexHandle(SharedMutexHandle& handle)
+void platformReleaseMutexHandle(NamedMutexHandle& handle)
 {
     return false;
 }
 
-void platformLockMutex(SharedMutexHandle& handle)
+void platformLockMutex(NamedMutexHandle& handle)
 {
     return false;
 }
 
-void platformUnlockMutex(SharedMutexHandle& handle)
+void platformUnlockMutex(NamedMutexHandle& handle)
 {
     return false;
 }
