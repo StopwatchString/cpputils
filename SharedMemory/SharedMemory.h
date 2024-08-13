@@ -32,43 +32,20 @@ public:
     }
 
     //---------------------------------------------------------
-    // operator+
-    //---------------------------------------------------------
-    _DataType operator+(const SharedMemory<_DataType>& other) const
-    {
-        return *m_DataPointer + *other.m_DataPointer;
-    }
-
-    //---------------------------------------------------------
-    // operator-
-    //---------------------------------------------------------
-    _DataType operator-(const SharedMemory<_DataType>& other) const
-    {
-        return *m_DataPointer - *other.m_DataPointer;
-    }
-
-    //---------------------------------------------------------
-    // operator*
-    //---------------------------------------------------------
-    _DataType operator*(const SharedMemory<_DataType>& other) const
-    {
-        return *m_DataPointer * *other.m_DataPointer;
-    }
-
-    //---------------------------------------------------------
-    // operator/
-    //---------------------------------------------------------
-    _DataType operator/(const SharedMemory<_DataType>& other) const
-    {
-        return *m_DataPointer / *other.m_DataPointer;
-    }
-
-    //---------------------------------------------------------
     // operator=
     //---------------------------------------------------------
     SharedMemory<_DataType>& operator=(const _DataType& other)
     {
         *m_DataPointer = other;
+        return *this;
+    }
+
+    //---------------------------------------------------------
+    // operator=
+    //---------------------------------------------------------
+    SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>& other)
+    {
+        *m_DataPointer = *other.m_DataPointer;
         return *this;
     }
 
@@ -86,15 +63,6 @@ public:
     operator _DataType() const
     {
         return *m_DataPointer;
-    }
-
-    //---------------------------------------------------------
-    // operator=
-    //---------------------------------------------------------
-    SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>& other)
-    {
-        *m_DataPointer = *other.m_DataPointer;
-        return *this;
     }
 
     _DataType* data()     { return m_DataPointer; }
