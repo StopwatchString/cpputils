@@ -102,8 +102,14 @@ public:
     //---------------------------------------------------------
     // Constructor
     //---------------------------------------------------------
-    SharedMemory(const std::string& key) : m_DataKey(key), m_DataSize(sizeof(_DataType))
+    SharedMemory(const std::string& key)
     {
+        // Initialize Members
+        m_DataKey = key;
+        m_DataSize = sizeof(_DataType);
+        m_SharedMemoryHandle = SharedMemoryHandle();
+
+        // Initialize Based on Members
         openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
     }
 
@@ -118,24 +124,35 @@ public:
     //---------------------------------------------------------
     // Copy Constructor
     //---------------------------------------------------------
-    SharedMemory(const SharedMemory<_DataType>& other) : m_DataKey(other.m_DataKey), m_DataSize(sizeof(_DataType))
+    SharedMemory(const SharedMemory<_DataType>& other)
     {
+        // Initialize Members
+        m_DataKey = other.m_DataKey;
+        m_DataSize = sizeof(_DataType);
+        m_SharedMemoryHandle = SharedMemoryHandle();
+
+        // Initialize Based on Members
         openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+
         // No need to copy underlying data since we're opening the same shared memory address.
     }
 
     //---------------------------------------------------------
     // Move Constructor
     //---------------------------------------------------------
-    SharedMemory(SharedMemory<_DataType>&& other) : m_DataKey(other.m_DataKey), m_DataSize(sizeof(_DataType))
+    SharedMemory(SharedMemory<_DataType>&& other)
     {
-        // Manage ourselves first to guarantee SharedMemory lives
-        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        // Initialize Members
+        m_DataKey = other.m_DataKey;
+        m_DataSize = sizeof(_DataType);
+        m_SharedMemoryHandle = other.m_SharedMemoryHandle;
 
         // Clean up other class
-        closeSharedMemory(other.m_SharedMemoryHandle);
         other.m_DataKey = "";
         other.m_DataSize = 0;
+        other.m_SharedMemoryHandle = SharedMemoryHandle();
+
+        // No need to initialize shared memory since we take control of other's handles.
     }
 
     //---------------------------------------------------------
@@ -146,9 +163,13 @@ public:
         // Clean up our resources
         closeSharedMemory(m_SharedMemoryHandle);
 
-        // Set up based on new resources
+        // Initialize Members
         m_DataKey = other.m_DataKey;
+
+        // Initialize Based on Members
         openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+
+        // No need to copy underlying data since we're opening the same shared memory address.
 
         return *this;
     }
@@ -159,15 +180,17 @@ public:
     SharedMemory<_DataType>& operator=(SharedMemory<_DataType>&& other) noexcept
     {
         if (this != &other) {
-            // Manage ourselves first to guarantee SharedMemory lives
+            // Clean up our resources
             closeSharedMemory(m_SharedMemoryHandle);
+
+            // Initialize Members
             m_DataKey = other.m_DataKey;
-            openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+            m_SharedMemoryHandle = other.m_SharedMemoryHandle;
 
             // Clean up other class
-            closeSharedMemory(other.m_SharedMemoryHandle);
             other.m_DataKey = "";
             other.m_DataSize = 0;
+            other.m_SharedMemoryHandle = SharedMemoryHandle();
         }
 
         return *this;
@@ -206,8 +229,8 @@ public:
     uint32_t size()       { return m_DataSize; }
 
 private:
-    SharedMemoryHandle        m_SharedMemoryHandle { NULL, nullptr };
-    std::string               m_DataKey            { "" };
+    std::string               m_DataKey            {};
     uint32_t                  m_DataSize           { 0 };
+    SharedMemoryHandle        m_SharedMemoryHandle {};
 };
 #endif
