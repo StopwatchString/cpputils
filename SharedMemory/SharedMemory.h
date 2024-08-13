@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-#ifdef WIN32
+#ifdef _WIN32
 //#########################################################
 // Windows Shared Memory Interface
 //#########################################################
