@@ -1,96 +1,33 @@
-#ifndef SHAREDMEMORY_H
-#define SHAREDMEMORY_H
+#ifndef SHARED_MEMORY_H
+#define SHARED_MEMORY_H
 
 #include <string>
 #include <iostream>
 
+// Imports and SharedMemoryHandle struct are defined per-platform
+struct SharedMemoryHandle;
 #ifdef _WIN32
-//#########################################################
-// Windows Shared Memory Interface
-//#########################################################
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+    struct SharedMemoryHandle
+    {
+        HANDLE hMapFile = NULL;
+        void* pData = nullptr;
+    };
+#elif defined(__linux__)
 
-struct SharedMemoryHandle
-{
-    HANDLE hMapFile = NULL;
-    void* pData = nullptr;
-};
-
-//---------------------------------------------------------
-// openSharedMemory
-//---------------------------------------------------------
-void openSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
-{
-    sharedMemoryHandle.hMapFile = CreateFileMappingA(
-        INVALID_HANDLE_VALUE,         // Use paging file
-        NULL,                         // Default security
-        PAGE_READWRITE,               // Read/write access
-        0,                            // Maximum object size (high-order DWORD)
-        sizeBytes,                    // Maximum object size (low-order DWORD)
-        key.c_str());                 // Name of mapping object
-
-    if (sharedMemoryHandle.hMapFile == NULL) {
-        std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
-        return;
-    }
-
-    sharedMemoryHandle.pData = MapViewOfFile(
-        sharedMemoryHandle.hMapFile,  // Handle to map object
-        FILE_MAP_ALL_ACCESS,          // Read/write permission
-        0,                            // Offset high
-        0,                            // Offset low
-        sizeBytes);                   // Number of bytes to map
-
-    if (sharedMemoryHandle.pData == nullptr) {
-        std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
-        CloseHandle(sharedMemoryHandle.hMapFile);
-        sharedMemoryHandle.hMapFile = NULL;
-    }
-}
-
-//---------------------------------------------------------
-// closeSharedMemory
-//---------------------------------------------------------
-void closeSharedMemory(SharedMemoryHandle& smh)
-{
-    if (smh.pData != nullptr) {
-        UnmapViewOfFile(smh.pData);
-        smh.pData = nullptr;
-    }
-
-    if (smh.hMapFile != NULL) {
-        CloseHandle(smh.hMapFile);
-        smh.hMapFile = NULL;
-    }
-}
-
+    struct SharedMemoryHandle
+    {
+        void* pData = nullptr;
+    };
 #else
-//#########################################################
-// Linux Shared Memory Interface
-//#########################################################
-
-struct SharedMemoryHandle
-{
-    void* pData = nullptr;
-};
-
-//---------------------------------------------------------
-// openSharedMemory
-//---------------------------------------------------------
-void openSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
-{
-}
-
-//---------------------------------------------------------
-// closeSharedMemory
-//---------------------------------------------------------
-void closeSharedMemory(SharedMemoryHandle& smh)
-{
-}
-
+#error Unsupported Platform
 #endif
+
+// Forward declare functions which will be implemented per-platform at end of file
+void platformOpenSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle);
+void platformCloseSharedMemory(SharedMemoryHandle& smh);
 
 //#########################################################
 // SharedMemory Generic Template
@@ -110,7 +47,7 @@ public:
         m_SharedMemoryHandle = SharedMemoryHandle();
 
         // Initialize Based on Members
-        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
     }
 
     //---------------------------------------------------------
@@ -118,7 +55,7 @@ public:
     //---------------------------------------------------------
     ~SharedMemory()
     {
-        closeSharedMemory(m_SharedMemoryHandle);
+        platformCloseSharedMemory(m_SharedMemoryHandle);
     }
 
     //---------------------------------------------------------
@@ -132,7 +69,7 @@ public:
         m_SharedMemoryHandle = SharedMemoryHandle();
 
         // Initialize Based on Members
-        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
         // No need to copy underlying data since we're opening the same shared memory address.
     }
@@ -161,13 +98,13 @@ public:
     SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>& other)
     {
         // Clean up our resources
-        closeSharedMemory(m_SharedMemoryHandle);
+        platformCloseSharedMemory(m_SharedMemoryHandle);
 
         // Initialize Members
         m_DataKey = other.m_DataKey;
 
         // Initialize Based on Members
-        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
         // No need to copy underlying data since we're opening the same shared memory address.
 
@@ -181,7 +118,7 @@ public:
     {
         if (this != &other) {
             // Clean up our resources
-            closeSharedMemory(m_SharedMemoryHandle);
+            platformCloseSharedMemory(m_SharedMemoryHandle);
 
             // Initialize Members
             m_DataKey = other.m_DataKey;
@@ -254,7 +191,7 @@ public:
         m_SharedMemoryHandle = SharedMemoryHandle();
 
         // Initialize Based on Members
-        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
     }
 
     //---------------------------------------------------------
@@ -262,7 +199,7 @@ public:
     //---------------------------------------------------------
     ~SharedMemory()
     {
-        closeSharedMemory(m_SharedMemoryHandle);
+        platformCloseSharedMemory(m_SharedMemoryHandle);
     }
 
     //---------------------------------------------------------
@@ -276,7 +213,7 @@ public:
         m_SharedMemoryHandle = SharedMemoryHandle();
 
         // Initialize Based on Members
-        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
         // No need to copy underlying data since we're opening the same shared memory address.
     }
@@ -305,14 +242,14 @@ public:
     SharedMemory<void>& operator=(const SharedMemory<void>& other)
     {
         // Clean up our resources
-        closeSharedMemory(m_SharedMemoryHandle);
+        platformCloseSharedMemory(m_SharedMemoryHandle);
 
         // Initialize Members
         m_DataKey = other.m_DataKey;
         m_DataSize = other.m_DataSize;
 
         // Initialize Based on Members
-        openSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+        platformOpenSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
         // No need to copy underlying data since we're opening the same shared memory address.
 
@@ -326,7 +263,7 @@ public:
     {
         if (this != &other) {
             // Clean up our resources
-            closeSharedMemory(m_SharedMemoryHandle);
+            platformCloseSharedMemory(m_SharedMemoryHandle);
 
             // Initialize Members
             m_DataKey = other.m_DataKey;
@@ -356,4 +293,78 @@ private:
     uint32_t                  m_DataSize{ 0 };
     SharedMemoryHandle        m_SharedMemoryHandle{};
 };
+
+#ifdef _WIN32
+//#########################################################
+// Windows Shared Memory Interface
+//#########################################################
+
+//---------------------------------------------------------
+// platformOpenSharedMemory
+//---------------------------------------------------------
+void platformOpenSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
+{
+    sharedMemoryHandle.hMapFile = CreateFileMappingA(
+        INVALID_HANDLE_VALUE,         // Use paging file
+        NULL,                         // Default security
+        PAGE_READWRITE,               // Read/write access
+        0,                            // Maximum object size (high-order DWORD)
+        sizeBytes,                    // Maximum object size (low-order DWORD)
+        key.c_str());                 // Name of mapping object
+
+    if (sharedMemoryHandle.hMapFile == NULL) {
+        std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
+        return;
+    }
+
+    sharedMemoryHandle.pData = MapViewOfFile(
+        sharedMemoryHandle.hMapFile,  // Handle to map object
+        FILE_MAP_ALL_ACCESS,          // Read/write permission
+        0,                            // Offset high
+        0,                            // Offset low
+        sizeBytes);                   // Number of bytes to map
+
+    if (sharedMemoryHandle.pData == nullptr) {
+        std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
+        CloseHandle(sharedMemoryHandle.hMapFile);
+        sharedMemoryHandle.hMapFile = NULL;
+    }
+}
+
+//---------------------------------------------------------
+// platformCloseSharedMemory
+//---------------------------------------------------------
+void platformCloseSharedMemory(SharedMemoryHandle& smh)
+{
+    if (smh.pData != nullptr) {
+        UnmapViewOfFile(smh.pData);
+        smh.pData = nullptr;
+    }
+
+    if (smh.hMapFile != NULL) {
+        CloseHandle(smh.hMapFile);
+        smh.hMapFile = NULL;
+    }
+}
+
+#elif defined(__linux__)
+//#########################################################
+// Linux Shared Memory Interface
+//#########################################################
+
+//---------------------------------------------------------
+// platformOpenSharedMemory
+//---------------------------------------------------------
+void platformOpenSharedMemory(const std::string& key, const uint32_t sizeBytes, SharedMemoryHandle& sharedMemoryHandle)
+{
+}
+
+//---------------------------------------------------------
+// platformCloseSharedMemory
+//---------------------------------------------------------
+void platformCloseSharedMemory(SharedMemoryHandle& smh)
+{
+}
+#endif
+
 #endif
