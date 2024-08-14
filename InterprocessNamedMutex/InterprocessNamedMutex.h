@@ -23,7 +23,6 @@
 #endif
 
 // Forward declare functions which will be implemented per-platform
-struct NamedMutexHandle;
 bool platformAcquireMutexHandle(NamedMutexHandle& handle, const std::string& key);
 bool platformReleaseMutexHandle(NamedMutexHandle& handle);
 void platformLockMutex(NamedMutexHandle& handle);
