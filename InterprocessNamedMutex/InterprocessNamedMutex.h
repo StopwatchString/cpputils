@@ -32,41 +32,123 @@ bool platformTryLockMutex(NamedMutexHandle& handle);
 class InterprocessNamedMutex
 {
 public:
+
+    //---------------------------------------------------------
+    // Constructor
+    //---------------------------------------------------------
     InterprocessNamedMutex(const std::string& key)
     {
         // Initialize Members
         m_MutexKey = key;
 
         // Initialize Based on Members
-        platformAcquireMutexHandle(m_SharedMutexHandle, m_MutexKey);
+        platformAcquireMutexHandle(m_NamedMutexHandle, m_MutexKey);
     }
 
+    //---------------------------------------------------------
+    // Destructor
+    //---------------------------------------------------------
     ~InterprocessNamedMutex()
     {
         if (m_Locked) {
-            platformUnlockMutex(m_SharedMutexHandle);
+            platformUnlockMutex(m_NamedMutexHandle);
         }
-        platformReleaseMutexHandle(m_SharedMutexHandle);
+        platformReleaseMutexHandle(m_NamedMutexHandle);
     }
 
+    //---------------------------------------------------------
+    // Copy Constructor
+    //---------------------------------------------------------
+    InterprocessNamedMutex(const InterprocessNamedMutex& other)
+    {
+        // Initialize Members
+        m_MutexKey = other.m_MutexKey;
+
+        // Initialize Based on Members
+        platformAcquireMutexHandle(m_NamedMutexHandle, m_MutexKey);
+    }
+
+    //---------------------------------------------------------
+    // Move Constructor
+    //---------------------------------------------------------
+    InterprocessNamedMutex(InterprocessNamedMutex&& other) noexcept
+    {
+        // Initialize Members
+        m_MutexKey = other.m_MutexKey;
+        m_Locked = other.m_Locked;
+        m_NamedMutexHandle = other.m_NamedMutexHandle;
+
+
+        // Clean up other class
+        other.m_MutexKey = "";
+        other.m_Locked = false;
+        other.m_NamedMutexHandle = NamedMutexHandle();
+    }
+
+    //---------------------------------------------------------
+    // Copy Assignment
+    //---------------------------------------------------------
+    InterprocessNamedMutex& operator=(const InterprocessNamedMutex& other)
+    {
+        if (this != &other) {
+            // Initialize Members
+            m_MutexKey = other.m_MutexKey;
+
+            // Initialize Based on Members
+            platformAcquireMutexHandle(m_NamedMutexHandle, m_MutexKey);
+        }
+        return *this;
+    }
+
+    //---------------------------------------------------------
+    // Move Assignment
+    //---------------------------------------------------------
+    InterprocessNamedMutex& operator=(InterprocessNamedMutex&& other) noexcept
+    {
+        if (this != &other) {
+            // Initialize Members
+            m_MutexKey = other.m_MutexKey;
+            m_Locked = other.m_Locked;
+            m_NamedMutexHandle = other.m_NamedMutexHandle;
+
+            // Clean up other class
+            other.m_MutexKey = "";
+            other.m_Locked = false;
+            other.m_NamedMutexHandle = NamedMutexHandle();
+        }
+        return *this;
+    }
+
+    //---------------------------------------------------------
+    // lock()
+    //---------------------------------------------------------
     void lock()
     {
-        platformLockMutex(m_SharedMutexHandle);
+        platformLockMutex(m_NamedMutexHandle);
         m_Locked = true;
     }
 
+    //---------------------------------------------------------
+    // unlock()
+    //---------------------------------------------------------
     void unlock()
     {
-        platformUnlockMutex(m_SharedMutexHandle);
+        platformUnlockMutex(m_NamedMutexHandle);
         m_Locked = false;
     }
 
+    //---------------------------------------------------------
+    // tryLock()
+    //---------------------------------------------------------
     bool tryLock()
     {
-        m_Locked = platformTryLockMutex(m_SharedMutexHandle);
+        m_Locked = platformTryLockMutex(m_NamedMutexHandle);
         return m_Locked;
     }
 
+    //---------------------------------------------------------
+    // locked()
+    //---------------------------------------------------------
     bool locked()
     {
         return m_Locked;
@@ -75,7 +157,7 @@ public:
 private:
     std::string m_MutexKey;
     bool m_Locked                           { false };
-    NamedMutexHandle m_SharedMutexHandle   {};
+    NamedMutexHandle m_NamedMutexHandle   {};
 };
 
 #ifdef _WIN32
