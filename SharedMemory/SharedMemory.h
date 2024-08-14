@@ -100,27 +100,29 @@ public:
     }
 
     //---------------------------------------------------------
-    // operator= Copy
+    // Copy Assignment
     //---------------------------------------------------------
     SharedMemory<_DataType>& operator=(const SharedMemory<_DataType>& other)
     {
-        // Clean up our resources
-        platformReleaseSharedMemory(m_SharedMemoryHandle);
+        if (this != &other) {
+            // Clean up our resources
+            platformReleaseSharedMemory(m_SharedMemoryHandle);
 
-        // Initialize Members
-        m_DataKey = other.m_DataKey;
-        m_InterprocessNamedMutex.emplace(other.m_DataKey + "_mutex");
+            // Initialize Members
+            m_DataKey = other.m_DataKey;
+            m_InterprocessNamedMutex.emplace(other.m_DataKey + "_mutex");
 
-        // Initialize Based on Members
-        platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
+            // Initialize Based on Members
+            platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
 
-        // No need to copy underlying data since we're opening the same shared memory address.
+            // No need to copy underlying data since we're opening the same shared memory address.
+        }
 
         return *this;
     }
 
     //---------------------------------------------------------
-    // operator= Move
+    // Move Assignment
     //---------------------------------------------------------
     SharedMemory<_DataType>& operator=(SharedMemory<_DataType>&& other) noexcept
     {
@@ -145,7 +147,7 @@ public:
     }
 
     //---------------------------------------------------------
-    // operator= Special case
+    // _DataType Assignment
     //---------------------------------------------------------
     SharedMemory<_DataType>& operator=(const _DataType& other)
     {
