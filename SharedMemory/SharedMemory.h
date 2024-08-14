@@ -3,6 +3,9 @@
 
 #include <string>
 #include <iostream>
+#include <optional>
+
+#include "../InterprocessNamedMutex/InterprocessNamedMutex.h"
 
 // Imports and SharedMemoryHandle struct are defined per-platform
 struct SharedMemoryHandle;
@@ -45,6 +48,7 @@ public:
         m_DataKey = key;
         m_DataSize = sizeof(_DataType);
         m_SharedMemoryHandle = SharedMemoryHandle();
+        m_InterprocessNamedMutex.emplace(key + "_mutex");
 
         // Initialize Based on Members
         platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
@@ -67,6 +71,7 @@ public:
         m_DataKey = other.m_DataKey;
         m_DataSize = sizeof(_DataType);
         m_SharedMemoryHandle = SharedMemoryHandle();
+        m_InterprocessNamedMutex.emplace(other.m_DataKey + "_mutex");
 
         // Initialize Based on Members
         platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
@@ -83,11 +88,13 @@ public:
         m_DataKey = other.m_DataKey;
         m_DataSize = sizeof(_DataType);
         m_SharedMemoryHandle = other.m_SharedMemoryHandle;
+        m_InterprocessNamedMutex = other.m_InterprocessNamedMutex;
 
         // Clean up other class
         other.m_DataKey = "";
         other.m_DataSize = 0;
         other.m_SharedMemoryHandle = SharedMemoryHandle();
+        m_InterprocessNamedMutex = std::move(other.m_InterprocessNamedMutex);
 
         // No need to initialize shared memory since we take control of other's handles.
     }
@@ -102,6 +109,7 @@ public:
 
         // Initialize Members
         m_DataKey = other.m_DataKey;
+        m_InterprocessNamedMutex.emplace(other.m_DataKey + "_mutex");
 
         // Initialize Based on Members
         platformAcquireSharedMemory(m_DataKey, m_DataSize, m_SharedMemoryHandle);
@@ -123,6 +131,7 @@ public:
             // Initialize Members
             m_DataKey = other.m_DataKey;
             m_SharedMemoryHandle = other.m_SharedMemoryHandle;
+            m_InterprocessNamedMutex = std::move(other.m_InterprocessNamedMutex);
 
             // Clean up other class
             other.m_DataKey = "";
@@ -167,10 +176,26 @@ public:
     // Returns size of SharedMemory in bytes
     uint32_t size()       { return m_DataSize; }
 
+    void lock()
+    {
+        m_InterprocessNamedMutex.value().lock();
+    }
+
+    void unlock()
+    {
+        m_InterprocessNamedMutex.value().unlock();
+    }
+
+    bool tryLock()
+    {
+        return m_InterprocessNamedMutex.value().tryLock();
+    }
+
 private:
     std::string               m_DataKey            {};
     uint32_t                  m_DataSize           { 0 };
     SharedMemoryHandle        m_SharedMemoryHandle {};
+    std::optional<InterprocessNamedMutex> m_InterprocessNamedMutex;
 };
 
 //#########################################################
