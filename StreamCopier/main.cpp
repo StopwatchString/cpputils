@@ -5,7 +5,7 @@
 
 int main()
 {
-    class StreamCopier streamCopier;
+    StreamCopier streamCopier;
 
     return EXIT_SUCCESS;
 }
