@@ -2,8 +2,9 @@
 
 #include <memory>
 
-StreamTexture::StreamTexture(uint32_t width, uint32_t height, uint32_t depth)
-    : m_Width(width),
+StreamTexture::StreamTexture(std::string name, uint32_t width, uint32_t height, uint32_t depth)
+    : m_Name(name),
+      m_Width(width),
       m_Height(height),
       m_Depth(depth),
       pboPersistentlyMappedMemory(nullptr)
@@ -30,8 +31,6 @@ uint32_t StreamTexture::getBufferSize()
 {
     return m_Width * m_Height * m_Depth;
 }
-
-#include <iostream>
 
 void StreamTexture::copyDataInto(void* inData, uint32_t inDataSize)
 {

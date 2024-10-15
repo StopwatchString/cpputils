@@ -7,12 +7,13 @@
 class StreamTexture
 {
 public:
-    StreamTexture(uint32_t width, uint32_t height, uint32_t depth);
+    StreamTexture(std::string name, uint32_t width, uint32_t height, uint32_t depth);
     ~StreamTexture();
 
     void init();
     void bind();
     uint32_t getBufferSize();
+    std::string getName() const { return m_Name; }
     void copyDataInto(void* inData, uint32_t inDataSize);
 
 private:
