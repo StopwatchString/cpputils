@@ -133,10 +133,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CopyTarget.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="StreamCopier.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CopyTarget.h" />
     <ClInclude Include="deps\opencv2\calib3d.hpp" />
     <ClInclude Include="deps\opencv2\calib3d\calib3d.hpp" />
     <ClInclude Include="deps\opencv2\calib3d\calib3d_c.h" />

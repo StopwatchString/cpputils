@@ -1,7 +1,13 @@
 #ifndef STREAM_COPIER_H
 #define STREAM_COPIER_H
 
+#include "StreamTexture.h"
+
 #include "opencv2/opencv.hpp"
+
+#include <vector>
+#include <thread>
+#include <mutex>
 
 //---------------------------------------------------------
 // class StreamCopier
@@ -9,17 +15,17 @@
 class StreamCopier
 {
 public:
-    enum class CAPTURE_TYPE {
-        INVALID_TYPE,
-        STREAM,
-        DIRECTSHOW
-    };
-
     struct CaptureConfig {
-        CAPTURE_TYPE captureType{ CAPTURE_TYPE::INVALID_TYPE };
+        cv::VideoCaptureAPIs api;
         std::string streamAddress;
         std::string directshowDeviceName;
         int directshowDeviceIndex{ 0 };
+    };
+
+    struct FrameData {
+        int width = 0;
+        int height = 0;
+        int depth = 0;
     };
 
     StreamCopier();
@@ -38,6 +44,8 @@ public:
     StreamCopier& operator=(StreamCopier&& other) = delete;
 
 private:
+    FrameData m_CurrentFrameData;
+    std::vector<StreamTexture*> m_StreamTextures;
     CaptureConfig m_CaptureConfig;
     bool m_Running;
     std::thread m_Thread;

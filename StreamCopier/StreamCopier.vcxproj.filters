@@ -24,6 +24,9 @@
     <ClCompile Include="StreamCopier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CopyTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StreamCopier.h">
@@ -1090,6 +1093,9 @@
     </ClInclude>
     <ClInclude Include="deps\opencv2\world.hpp">
       <Filter>Header Files\opencv2</Filter>
+    </ClInclude>
+    <ClInclude Include="CopyTarget.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

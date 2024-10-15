@@ -1,8 +1,5 @@
 #include "StreamCopier.h"
 
-#include <thread>
-#include <mutex>
-
 //---------------------------------------------------------
 // Constructor
 //---------------------------------------------------------
@@ -39,7 +36,7 @@ StreamCopier::~StreamCopier()
 void StreamCopier::updateCaptureConfig(CaptureConfig inCaptureConfig)
 {
     if (!m_Running) {
-
+        m_CaptureConfig = inCaptureConfig;
     }
     else {
         std::cout << "WARNING StreamCopier::updateCaptureConfig() Function called while thread is m_Running. New config ignored." << std::endl;
@@ -81,7 +78,52 @@ void StreamCopier::stop()
 //---------------------------------------------------------
 void StreamCopier::threadFunc()
 {
-    while (m_Running) {
+    // Open Capture
+    cv::VideoCapture cvVideoCapture;
 
+    switch (m_CaptureConfig.api)
+    {
+        case cv::CAP_DSHOW:
+        {
+            // look up index based on config
+            int index = m_CaptureConfig.directshowDeviceIndex;
+            cvVideoCapture.open(index, cv::CAP_DSHOW);
+            break;
+        }
+        case cv::CAP_FFMPEG:
+        {
+            cvVideoCapture.open(m_CaptureConfig.streamAddress, cv::CAP_FFMPEG);
+            break;
+        }
+        default:
+            break;
+    }
+
+    int width = 0;
+    int height = 0;
+    int depth = 0;
+
+    if (!cvVideoCapture.isOpened()) {
+        std::cout << "ERROR StreamCopier::threadFunc() Could not open OpenCV Capture stream." << std::endl;
+        m_Running = false;
+    }
+
+    cv::Mat cvFrame;
+    while (m_Running) {
+        // Get frame
+        if (cvVideoCapture.read(cvFrame)) {
+            int width = cvFrame.cols;
+            int height = cvFrame.rows;
+            int depth = cvFrame.channels();
+            uint32_t size = width * height * depth;
+            cvFrame.data;
+
+            for (StreamTexture* texture : m_StreamTextures) {
+                void* target = texture->getTargetAddress(width, height, depth);
+                if (target != nullptr) {
+                    memcpy(target, cvFrame.data, size);
+                }
+            }
+        }
     }
 }
