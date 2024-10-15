@@ -5,6 +5,7 @@
 
 int main()
 {
+    StreamCopier::CaptureConfig captureConfig;
     StreamCopier streamCopier;
 
     return EXIT_SUCCESS;

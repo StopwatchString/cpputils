@@ -9,13 +9,27 @@
 class StreamCopier
 {
 public:
+    enum class CAPTURE_TYPE {
+        INVALID_TYPE,
+        STREAM,
+        DIRECTSHOW
+    };
+
+    struct CaptureConfig {
+        CAPTURE_TYPE captureType{ CAPTURE_TYPE::INVALID_TYPE };
+        std::string streamAddress;
+        std::string directshowDeviceName;
+        int directshowDeviceIndex{ 0 };
+    };
+
     StreamCopier();
+    StreamCopier(CaptureConfig inCaptureConfig);
     ~StreamCopier();
 
-    void updateConfig();
+    void updateCaptureConfig(CaptureConfig inCaptureConfig);
     void start();
     void stop();
-    bool isRunning() { return running; };
+    bool isRunning() { return m_Running; };
 
     StreamCopier(const StreamCopier& other) = delete;
     StreamCopier(StreamCopier&& other) noexcept = delete;
@@ -24,8 +38,9 @@ public:
     StreamCopier& operator=(StreamCopier&& other) = delete;
 
 private:
-    bool running;
-    std::thread thread;
+    CaptureConfig m_CaptureConfig;
+    bool m_Running;
+    std::thread m_Thread;
     void threadFunc();
 };
 

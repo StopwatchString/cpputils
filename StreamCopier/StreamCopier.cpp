@@ -7,9 +7,22 @@
 // Constructor
 //---------------------------------------------------------
 StreamCopier::StreamCopier()
-    : running(true)
+    : m_Running(false),
+      m_CaptureConfig(),
+      m_Thread()
 {
-    thread = std::thread(&StreamCopier::threadFunc, this);
+
+}
+
+//---------------------------------------------------------
+// Config Constructor
+//---------------------------------------------------------
+StreamCopier::StreamCopier(CaptureConfig inCaptureConfig)
+    : m_Running(false),
+      m_CaptureConfig(inCaptureConfig),
+      m_Thread()
+{
+
 }
 
 //---------------------------------------------------------
@@ -21,15 +34,15 @@ StreamCopier::~StreamCopier()
 }
 
 //---------------------------------------------------------
-// updateConfig()
+// updateCaptureConfig()
 //---------------------------------------------------------
-void StreamCopier::updateConfig()
+void StreamCopier::updateCaptureConfig(CaptureConfig inCaptureConfig)
 {
-    if (!running) {
+    if (!m_Running) {
 
     }
     else {
-        std::cout << "WARNING StreamCopier::updateConfig() Function called while thread is running. New config ignored." << std::endl;
+        std::cout << "WARNING StreamCopier::updateCaptureConfig() Function called while thread is m_Running. New config ignored." << std::endl;
     }
 }
 
@@ -38,12 +51,12 @@ void StreamCopier::updateConfig()
 //---------------------------------------------------------
 void StreamCopier::start()
 {
-    if (!running) {
-        running = true;
-        thread = std::thread(&StreamCopier::threadFunc, this);
+    if (!m_Running) {
+        m_Running = true;
+        m_Thread = std::thread(&StreamCopier::threadFunc, this);
     }
     else {
-        std::cout << "WARNING StreamCopier::start() Function called while thread is already running." << std::endl;
+        std::cout << "WARNING StreamCopier::start() Function called while thread is already m_Running." << std::endl;
     }
 }
 
@@ -52,14 +65,14 @@ void StreamCopier::start()
 //---------------------------------------------------------
 void StreamCopier::stop()
 {
-    if (running) {
-        running = false;
-        if (thread.joinable()) {
-            thread.join();
+    if (m_Running) {
+        m_Running = false;
+        if (m_Thread.joinable()) {
+            m_Thread.join();
         }
     }
     else {
-        std::cout << "WARNING StreamCopier::stop() Function called while thread isn't running." << std::endl;
+        std::cout << "WARNING StreamCopier::stop() Function called while thread isn't m_Running." << std::endl;
     }
 }
 
@@ -68,7 +81,7 @@ void StreamCopier::stop()
 //---------------------------------------------------------
 void StreamCopier::threadFunc()
 {
-    while (running) {
+    while (m_Running) {
 
     }
 }
