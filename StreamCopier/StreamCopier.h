@@ -12,6 +12,11 @@ public:
     StreamCopier();
     ~StreamCopier();
 
+    void updateConfig();
+    void start();
+    void stop();
+    bool isRunning() { return running; };
+
     StreamCopier(const StreamCopier& other) = delete;
     StreamCopier(StreamCopier&& other) noexcept = delete;
 
@@ -19,7 +24,9 @@ public:
     StreamCopier& operator=(StreamCopier&& other) = delete;
 
 private:
-
+    bool running;
+    std::thread thread;
+    void threadFunc();
 };
 
 #endif
