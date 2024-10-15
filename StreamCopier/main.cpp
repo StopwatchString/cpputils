@@ -1,4 +1,5 @@
 #include "StreamCopier.h"
+#include "StreamTexture.h"
 
 #include <iostream>
 #include <vector>
@@ -12,9 +13,6 @@ int main()
 
     StreamCopier streamCopier(captureConfig);
     streamCopier.start();
-
-    std::string temp;
-    std::getline(std::cin, temp);
 
     return EXIT_SUCCESS;
 }

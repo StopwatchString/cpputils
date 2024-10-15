@@ -1,10 +1,12 @@
 #include "StreamTexture.h"
 
+#include <memory>
+
 StreamTexture::StreamTexture(uint32_t width, uint32_t height, uint32_t depth)
     : m_Width(width),
-    m_Height(height),
-    m_Depth(depth),
-    pboPersistentlyMappedMemory(nullptr)
+      m_Height(height),
+      m_Depth(depth),
+      pboPersistentlyMappedMemory(nullptr)
 {
 
 }
@@ -29,9 +31,12 @@ uint32_t StreamTexture::getBufferSize()
     return m_Width * m_Height * m_Depth;
 }
 
-void StreamTexture::copyDataInto(void* data)
+#include <iostream>
+
+void StreamTexture::copyDataInto(void* inData, uint32_t inDataSize)
 {
     if (pboPersistentlyMappedMemory != nullptr) {
-
+        int copySize = std::min(inDataSize, getBufferSize());
+        memcpy(pboPersistentlyMappedMemory, inData, m_Width * m_Height * m_Depth);
     }
 }

@@ -31,15 +31,57 @@ StreamCopier::~StreamCopier()
 }
 
 //---------------------------------------------------------
+// getFrameData()
+//---------------------------------------------------------
+StreamCopier::FrameData StreamCopier::getFrameData()
+{
+    std::lock_guard<std::mutex> lock(m_FrameDataLock);
+    return m_FrameData;
+}
+
+//---------------------------------------------------------
+// addStreamTexture()
+//---------------------------------------------------------
+void StreamCopier::addStreamTexture(StreamTexture* streamTexture)
+{
+    std::lock_guard<std::mutex> lock(m_StreamTexturesLock);
+    auto iter = std::find(std::begin(m_StreamTextures), std::end(m_StreamTextures), streamTexture);
+    if (iter == std::end(m_StreamTextures)) {
+        m_StreamTextures.push_back(streamTexture);
+    }
+}
+
+//---------------------------------------------------------
+// removeStreamTexture()
+//---------------------------------------------------------
+void StreamCopier::removeStreamTexture(StreamTexture* streamTexture)
+{
+    std::lock_guard<std::mutex> lock(m_StreamTexturesLock);
+    auto iter = std::find(std::begin(m_StreamTextures), std::end(m_StreamTextures), streamTexture);
+    if (iter != std::end(m_StreamTextures)) {
+        m_StreamTextures.erase(iter);
+    }
+}
+
+//---------------------------------------------------------
+// removeStreamTexture()
+//---------------------------------------------------------
+void StreamCopier::clearStreamTextureList()
+{
+    std::lock_guard<std::mutex> lock(m_StreamTexturesLock);
+    m_StreamTextures.clear();
+}
+
+//---------------------------------------------------------
 // updateCaptureConfig()
 //---------------------------------------------------------
 void StreamCopier::updateCaptureConfig(CaptureConfig inCaptureConfig)
 {
-    if (!m_Running) {
+    if (!m_Thread.joinable()) {
         m_CaptureConfig = inCaptureConfig;
     }
     else {
-        std::cout << "WARNING StreamCopier::updateCaptureConfig() Function called while thread is m_Running. New config ignored." << std::endl;
+        std::cout << "WARNING StreamCopier::updateCaptureConfig() Function called while thread is running. New config ignored." << std::endl;
     }
 }
 
@@ -48,12 +90,11 @@ void StreamCopier::updateCaptureConfig(CaptureConfig inCaptureConfig)
 //---------------------------------------------------------
 void StreamCopier::start()
 {
-    if (!m_Running) {
-        m_Running = true;
+    if (!m_Thread.joinable()) {
         m_Thread = std::thread(&StreamCopier::threadFunc, this);
     }
     else {
-        std::cout << "WARNING StreamCopier::start() Function called while thread is already m_Running." << std::endl;
+        std::cout << "WARNING StreamCopier::start() Function called while thread is already running." << std::endl;
     }
 }
 
@@ -99,30 +140,32 @@ void StreamCopier::threadFunc()
             break;
     }
 
-    int width = 0;
-    int height = 0;
-    int depth = 0;
+    cv::Mat cvFrame;
+    if (cvVideoCapture.isOpened()) {
+        // Read an initial frame to set our FrameData settings before we report running
+        while (cvFrame.empty() && cvVideoCapture.isOpened()) {
+            cvVideoCapture.read(cvFrame);
+        }
 
-    if (!cvVideoCapture.isOpened()) {
+        m_FrameData.width = cvFrame.cols;
+        m_FrameData.height = cvFrame.rows;
+        m_FrameData.depth = cvFrame.channels();
+
+        m_Running = true;
+    }
+    else {
         std::cout << "ERROR StreamCopier::threadFunc() Could not open OpenCV Capture stream." << std::endl;
-        m_Running = false;
     }
 
-    cv::Mat cvFrame;
     while (m_Running) {
         // Get frame
         if (cvVideoCapture.read(cvFrame)) {
-            int width = cvFrame.cols;
-            int height = cvFrame.rows;
-            int depth = cvFrame.channels();
-            uint32_t size = width * height * depth;
-            cvFrame.data;
+            
+            uint32_t size = cvFrame.cols * cvFrame.rows * cvFrame.channels();
 
+            std::lock_guard<std::mutex> lock(m_StreamTexturesLock);
             for (StreamTexture* texture : m_StreamTextures) {
-                void* target = texture->getTargetAddress(width, height, depth);
-                if (target != nullptr) {
-                    memcpy(target, cvFrame.data, size);
-                }
+                texture->copyDataInto(cvFrame.data, size);
             }
         }
     }

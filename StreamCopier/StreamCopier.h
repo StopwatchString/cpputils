@@ -32,6 +32,12 @@ public:
     StreamCopier(CaptureConfig inCaptureConfig);
     ~StreamCopier();
 
+    FrameData getFrameData();
+
+    void addStreamTexture(StreamTexture* streamTexture);
+    void removeStreamTexture(StreamTexture* streamTexture);
+    void clearStreamTextureList();
+
     void updateCaptureConfig(CaptureConfig inCaptureConfig);
     void start();
     void stop();
@@ -44,12 +50,15 @@ public:
     StreamCopier& operator=(StreamCopier&& other) = delete;
 
 private:
-    FrameData m_CurrentFrameData;
+    void threadFunc();
+
+    FrameData m_FrameData;
+    std::mutex m_FrameDataLock;
     std::vector<StreamTexture*> m_StreamTextures;
+    std::mutex m_StreamTexturesLock;
     CaptureConfig m_CaptureConfig;
     bool m_Running;
     std::thread m_Thread;
-    void threadFunc();
 };
 
 #endif

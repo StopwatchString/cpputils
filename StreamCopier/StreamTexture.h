@@ -2,6 +2,7 @@
 #define STREAM_TEXTURE_H
 
 #include <cstdint>
+#include <string>
 
 class StreamTexture
 {
@@ -12,9 +13,10 @@ public:
     void init();
     void bind();
     uint32_t getBufferSize();
-    void copyDataInto(void* data);
+    void copyDataInto(void* inData, uint32_t inDataSize);
 
 private:
+    std::string m_Name;
     uint32_t m_Width{ 0 };
     uint32_t m_Height{ 0 };
     uint32_t m_Depth{ 0 };
