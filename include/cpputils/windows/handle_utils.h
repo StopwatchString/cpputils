@@ -2,6 +2,8 @@
 #define CPPUTILS_WINDOWS_HANDLE_UTILS_H
 
 #include "cpputils/SharedMemory.h"
+#include "cpputils/InterprocessMutex.h"
+#include "cpputils/InterprocessMutexLockGuard.h"
 
 #include <windows.h>
 
@@ -10,7 +12,7 @@
 
 struct ShareHandleData
 {
-    HANDLE handle{ NULL };
+    HANDLE sourceHandle{ NULL };
     DWORD sourceProcessId{ 0 };
     bool ready{ false };
 };
@@ -18,13 +20,17 @@ struct ShareHandleData
 class EmittedHandle
 {
 public:
-    EmittedHandle(const std::string& key, HANDLE handle)
+    EmittedHandle(const std::string& key, HANDLE sourceHandle)
         : sharedMemory(key, sizeof(ShareHandleData))
     {
-        data.handle = handle;
+        data.sourceHandle = sourceHandle;
         data.sourceProcessId = GetCurrentProcessId();
         data.ready = true;
         if (sharedMemory.data() != nullptr) {
+            // Will only ever need to lock during initialization
+            InterprocessMutex mutex("emmitedHandle#" + key);
+            InterprocessMutexLockGuard lock(mutex);
+
             memcpy(sharedMemory.data(), &data, sizeof(ShareHandleData));
         }
     }
@@ -36,6 +42,9 @@ private:
 
 HANDLE getHandleCopy(const std::string& key)
 {
+    InterprocessMutex mutex("emmitedHandle#" + key);
+    InterprocessMutexLockGuard lock(mutex);
+
     // If OpenFileMapping is used here, then MapViewOfFile always fails below
     // We use a flag to indicate 'readiness' in the mapped memory instead (windows guarantees fresh shared memory is zeroed)
     //HANDLE hFileMapping = OpenFileMappingA(
@@ -75,6 +84,7 @@ HANDLE getHandleCopy(const std::string& key)
     ShareHandleData data;
     memcpy(&data, pData, sizeof(ShareHandleData));
 
+    // In case we are the first to open the file. Workaround for OpenFileMapping not working....
     if (!data.ready) {
         std::cerr << "ERROR getHandleCopy() Mapped data but it's not ready!" << std::endl;
         UnmapViewOfFile(pData);
@@ -93,7 +103,7 @@ HANDLE getHandleCopy(const std::string& key)
     HANDLE hDuplicate = NULL;
     DuplicateHandle(
         hSourceProcess,
-        data.handle,
+        data.sourceHandle,
         GetCurrentProcess(),
         &hDuplicate,
         NULL,
