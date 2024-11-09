@@ -61,11 +61,11 @@ private:
 
         hFileMapping = CreateFileMappingA(
             NULL,            // File backing the mapping. When NULL, system paging file is used (shared memory)
-            NULL,
-            PAGE_READWRITE,
-            upper,
-            lower,
-            key.c_str()
+            NULL,            // Security params, NULL == default security
+            PAGE_READWRITE,  // Access params for file mappings
+            upper,           // High DWORD indicating size
+            lower,           // Low DWORD indicating size
+            key.c_str()      // Key used to identify this mapping
         );
 
         if (hFileMapping == NULL) {
@@ -74,11 +74,11 @@ private:
         }
 
         pData = MapViewOfFile(
-            hFileMapping,
-            FILE_MAP_ALL_ACCESS,
-            0,
-            0,
-            sizeBytes
+            hFileMapping,         // File mapping to map
+            FILE_MAP_ALL_ACCESS,  // Access params for mapped view
+            0,                    // High DWORD offset into file
+            0,                    // Low DWORD offset into file
+            sizeBytes             // Size in bytes to map
         );
 
         if (pData == nullptr) {
