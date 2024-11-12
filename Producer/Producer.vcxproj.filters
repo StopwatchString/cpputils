@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\cpputils">
+      <UniqueIdentifier>{a80f3b6a-0340-464a-a021-878d87d729bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GLFW">
+      <UniqueIdentifier>{a54b1d9d-c69a-4d83-9352-e8c82d65e46c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\glh">
+      <UniqueIdentifier>{be783a7b-eafd-4560-a68f-cb8a32447725}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\glad">
+      <UniqueIdentifier>{202ae7f3-5a90-4d02-959e-6093087f8479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\glh">
+      <UniqueIdentifier>{9426374f-f5b6-4fdb-9532-57c9551d4e01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\cpputils\windows">
+      <UniqueIdentifier>{040b9caf-657f-4935-9ca5-b71e43f5a506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\glh\glh">
+      <UniqueIdentifier>{f6115bee-85ad-4e8f-9d8c-875b7075a5f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\glh\glad">
+      <UniqueIdentifier>{dc1fb09f-b5e1-4ec5-a09e-0896df29c96b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\glh\KHR">
+      <UniqueIdentifier>{f98f91ce-cca1-4094-a2fd-3e21874b2390}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Consumer\extern\glh\src\glad\gl.c">
+      <Filter>Source Files\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Consumer\extern\glh\src\glad\wgl.c">
+      <Filter>Source Files\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\directx_utils.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGLApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Consumer\extern\cpputils\include\cpputils\InterprocessMutex.h">
+      <Filter>Header Files\cpputils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Consumer\extern\cpputils\include\cpputils\InterprocessMutexLockGuard.h">
+      <Filter>Header Files\cpputils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Consumer\extern\cpputils\include\cpputils\SharedMemory.h">
+      <Filter>Header Files\cpputils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Consumer\extern\cpputils\include\cpputils\windows\handle_utils.h">
+      <Filter>Header Files\cpputils\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OpenGLApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\glh\include\glh\glh.h">
+      <Filter>Header Files\glh\glh</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\glh\include\glh\macros.h">
+      <Filter>Header Files\glh\glh</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\glh\include\KHR\khrplatform.h">
+      <Filter>Header Files\glh\KHR</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\glh\include\glad\gl.h">
+      <Filter>Header Files\glh\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\glh\include\glad\glx.h">
+      <Filter>Header Files\glh\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\glh\include\glad\wgl.h">
+      <Filter>Header Files\glh\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="extern\glh\include\glh\debugWrappers.h">
+      <Filter>Header Files\glh\glh</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

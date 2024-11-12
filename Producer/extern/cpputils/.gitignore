@@ -6,6 +6,3 @@ StreamCopier/deps/opencv_world4100.dll
 StreamCopier/deps/opencv_world4100.lib
 StreamCopier/deps/opencv_world4100d.dll
 StreamCopier/deps/opencv_world4100d.lib
-Producer/.vs
-Producer/Producer
-Producer/x64
