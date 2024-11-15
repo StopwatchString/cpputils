@@ -5,6 +5,9 @@
 
 #include <iostream>
 
+//-----------------------------------------------
+// duplicateHandle()
+//-----------------------------------------------
 HANDLE duplicateHandle(DWORD sourceProcessId, HANDLE hSourceHandle)
 {
     HANDLE hSourceProcessHandle = OpenProcess(
