@@ -8,7 +8,7 @@
 //-----------------------------------------------
 // duplicateHandle()
 //-----------------------------------------------
-HANDLE duplicateHandle(DWORD sourceProcessId, HANDLE hSourceHandle)
+static HANDLE duplicateHandle(DWORD sourceProcessId, HANDLE hSourceHandle)
 {
     HANDLE hSourceProcessHandle = OpenProcess(
         PROCESS_DUP_HANDLE,  // dwDesiredAccess
