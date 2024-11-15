@@ -65,12 +65,12 @@ private:
         uint32_t upper = static_cast<uint32_t>((sizeBytes >> 32) & 0xFFFFFFFF);
 
         hFileMapping = CreateFileMappingA(
-            NULL,            // File backing the mapping. When NULL, system paging file is used (shared memory)
-            NULL,            // Security params, NULL == default security
-            PAGE_READWRITE,  // Access params for file mappings
-            upper,           // High DWORD indicating size
-            lower,           // Low DWORD indicating size
-            key.c_str()      // Key used to identify this mapping
+            INVALID_HANDLE_VALUE,  // File backing the mapping. When NULL, system paging file is used (shared memory)
+            NULL,                  // Security params, NULL == default security
+            PAGE_READWRITE,        // Access params for file mappings
+            upper,                 // High DWORD indicating size
+            lower,                 // Low DWORD indicating size
+            key.c_str()            // Key used to identify this mapping
         );
 
         if (hFileMapping == NULL) {
