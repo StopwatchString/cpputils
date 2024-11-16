@@ -39,4 +39,24 @@ static HANDLE duplicateHandle(DWORD sourceProcessId, HANDLE hSourceHandle)
     return hTargetHandle;
 }
 
+//-----------------------------------------------
+// getSourceProcessHandleFromHwnd()
+//-----------------------------------------------
+static HANDLE getSourceProcessHandleFromHwnd(HWND hWnd)
+{
+    LPDWORD lpdwProcessId = NULL;
+    DWORD threadId = GetWindowThreadProcessId(hWnd, lpdwProcessId);
+
+    HANDLE hProcess = NULL;
+    if (lpdwProcessId != NULL) {
+        hProcess = OpenProcess(
+            PROCESS_ALL_ACCESS,
+            FALSE,
+            *lpdwProcessId
+        );
+    }
+
+    return hProcess;
+}
+
 #endif
