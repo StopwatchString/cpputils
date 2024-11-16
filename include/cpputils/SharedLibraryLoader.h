@@ -80,6 +80,11 @@ public:
 #endif    
     }
 
+    //-----------------------------------------------------
+    // name() - Returns libraryName passed to constructor
+    //-----------------------------------------------------
+    std::string name() const { return libraryName; }
+
 private:
     const std::string libraryName;
 
