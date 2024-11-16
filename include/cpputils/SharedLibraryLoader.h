@@ -55,7 +55,7 @@ public:
     //-----------------------------------------------------
     // loadFunctionPointer()
     //-----------------------------------------------------
-    void* loadFunctionPointer(const char* functionName) 
+    void* loadFunctionPointer(const char* functionName) const
     {
         void* funcPointer = nullptr;
 #if defined(_WIN32)
@@ -71,7 +71,7 @@ public:
     //-----------------------------------------------------
     // valid()
     //-----------------------------------------------------
-    bool valid()
+    bool valid() const
     {
 #if defined(_WIN32)
         return hLibModule != NULL;
