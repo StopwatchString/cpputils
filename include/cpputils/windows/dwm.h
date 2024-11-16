@@ -8,8 +8,13 @@
 // Desktop Window Mangement API for you.
 //-----------------------------------------------------
 
+#include "cpputils/SharedLibraryLoader.h"
+
 #include <windows.h>
 #include <dwmapi.h>
+
+const std::string DWM_API_DLL_NAME{ "dwmapi.dll" };
+SharedLibraryLoader dwmApiLibrary(DWM_API_DLL_NAME);
 
 //-----------------------------------------------------
 // PFN_DWM_SET_WINDOW_ATTRIBUTE
@@ -23,41 +28,12 @@ typedef HRESULT(WINAPI* PFN_DWM_SET_WINDOW_ATTRIBUTE)(
 static PFN_DWM_SET_WINDOW_ATTRIBUTE DwmSetWindowAttributePtr = nullptr;
 
 //-----------------------------------------------------
-// class DWMAPIdllState
-// 
-// RAII management of loading dwmapi.dll at runtime.
-// Users of these functions need not worry about
-// calling FreeLibrary() themselves.
-//-----------------------------------------------------
-class DWMAPIdllState {
-    const char* DWM_API_DLL_NAME {"dwmapi.dll"};
-public:
-    DWMAPIdllState() {
-        hDWMAPIdll = LoadLibraryA(DWM_API_DLL_NAME);
-    }
-    ~DWMAPIdllState() {
-        if (hDWMAPIdll != NULL) {
-            FreeLibrary(hDWMAPIdll);
-            hDWMAPIdll = NULL;
-        }
-    }
-
-    void* loadDWMAPIProc(const char* procName) {
-        return GetProcAddress(hDWMAPIdll, procName);
-    }
-
-private:
-    HMODULE hDWMAPIdll           { NULL };
-};
-DWMAPIdllState dwmApiDllState;
-
-//-----------------------------------------------------
 // setWindowDarkMode()
 //-----------------------------------------------------
 static bool setWindowDarkMode(HWND hWnd, bool darkMode)
 {
     if (!DwmSetWindowAttributePtr) {
-        DwmSetWindowAttributePtr = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiDllState.loadDWMAPIProc("DwmSetWindowAttribute");
+        DwmSetWindowAttributePtr = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiLibrary.loadFunctionPointer("DwmSetWindowAttribute");
     }
     if (!DwmSetWindowAttributePtr) return false;
 
@@ -77,7 +53,7 @@ static bool setWindowDarkMode(HWND hWnd, bool darkMode)
 static bool setWindowRoundedCorners(HWND hWnd, bool rounded)
 {
     if (!DwmSetWindowAttributePtr) {
-        DwmSetWindowAttributePtr = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiDllState.loadDWMAPIProc("DwmSetWindowAttribute");
+        DwmSetWindowAttributePtr = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiLibrary.loadFunctionPointer("DwmSetWindowAttribute");
     }
     if (!DwmSetWindowAttributePtr) return false;
 
@@ -97,7 +73,7 @@ static bool setWindowRoundedCorners(HWND hWnd, bool rounded)
 static bool setWindowCloaked(HWND hWnd, bool cloaked)
 {
     if (!DwmSetWindowAttributePtr) {
-        DwmSetWindowAttributePtr = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiDllState.loadDWMAPIProc("DwmSetWindowAttribute");
+        DwmSetWindowAttributePtr = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiLibrary.loadFunctionPointer("DwmSetWindowAttribute");
     }
     if (!DwmSetWindowAttributePtr) return false;
 
@@ -117,7 +93,7 @@ static bool setWindowCloaked(HWND hWnd, bool cloaked)
 static bool setWindowTitlebarTransparent(HWND hWnd, bool transparent)
 {
     if (!DwmSetWindowAttributePtr) {
-        DwmSetWindowAttributePtr = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiDllState.loadDWMAPIProc("DwmSetWindowAttribute");
+        DwmSetWindowAttributePtr = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiLibrary.loadFunctionPointer("DwmSetWindowAttribute");
     }
     if (!DwmSetWindowAttributePtr) return false;
 

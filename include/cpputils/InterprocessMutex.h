@@ -9,8 +9,6 @@
     #include <windows.h>
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error InterprocessMutex.h: Unsupported Platform
 #endif
 
 //------------------------------------------------------------
@@ -37,8 +35,6 @@ public:
         DWORD result = WaitForSingleObject(hMutex, INFINITE);
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error InterprocessMutex.h: Unsupported Platform
 #endif
         locked = true;
     }
@@ -49,8 +45,6 @@ public:
         ReleaseMutex(hMutex);
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error InterprocessMutex.h: Unsupported Platform
 #endif
         locked = false;
     }
@@ -61,8 +55,6 @@ public:
         locked = WaitForSingleObject(hMutex, 0) == WAIT_OBJECT_0;
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error InterprocessMutex.h: Unsupported Platform
 #endif
         return locked;
     }
@@ -76,8 +68,6 @@ private:
     HANDLE hMutex{ NULL };
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error InterprocessMutex.h: Unsupported Platform
 #endif
 
     void createInterprocessMutex()
@@ -94,8 +84,6 @@ private:
         }
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error InterprocessMutex.h: Unsupported Platform
 #endif
     }
 
@@ -108,8 +96,6 @@ private:
         }
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error InterprocessMutex.h: Unsupported Platform
 #endif
     }
 

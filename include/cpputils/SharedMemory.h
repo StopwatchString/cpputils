@@ -9,8 +9,6 @@
     #include <windows.h>
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error SharedMemory.h: Unsupported Platform
 #endif
 //------------------------------------------------------------
 // class SharedMemory
@@ -51,8 +49,6 @@ private:
     HANDLE hFileMapping{ NULL };
 #elif defined(__linux__)
     // TODO:: Linux Implementation
-#else
-    #error SharedMemory.h: Unsupported Platform
 #endif
 
     //------------------------------------------------------------
@@ -95,8 +91,6 @@ private:
 
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error SharedMemory: Unsupported Platform
 #endif
     }
 
@@ -118,8 +112,6 @@ private:
 
 #elif defined (__linux__)
     // TODO:: Linux Implementation
-#else
-    #error SharedMemory.h: Unsupported Platform
 #endif
     }
 };
