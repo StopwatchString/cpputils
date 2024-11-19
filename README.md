@@ -6,13 +6,15 @@ A collection of header-only implementation includes to help speed up development
 
 [Interprocess Mutex](#cpputils/interprocesmutex)
 
+[InterprocessMutexLockGuard](#cpputils/interpocessmutexlockguard)
+
 ## cpputils/InterprocessMutex.h
 
-## cpputils/InterprocessMutexLockGuard
+## cpputils/InterprocessMutexLockGuard.h
 
-## cpputils/SharedLibraryLoader
+## cpputils/SharedLibraryLoader.h
 
-## cpputils/SharedMemory
+## cpputils/SharedMemory.h
 
 A header-only RAII implementation of an OS interprocess shared memory datatype. Uses a key and a 64bit uint to open a mapped piece of shared memory in either Windows or Linux. Provides a simple interface with just two getters:
 
@@ -21,17 +23,15 @@ void data() { return pData; }
 size_t size() const { return sizeBytes; }
 ```
 
-## cpputils/windows/handle_utils
+## cpputils/windows/handle_utils.h
 
-## cpputils/windows/dwm
+## cpputils/windows/dwm.h
 
-### Depends on cpputils/SharedLibraryLoader
+An interface into the Desktop Window Management (DWM) library in windows. Handles importing DWM functions for you.
 
-A simple interface into the Desktop Window Management (DWM) library in windows. Handles importing DWM functions for you.
-
-Current functions:
-
-- setWindowDarkMode()
-- setWindowRoundedCorners()
-- setWindowCloaked() (cloaked is defined as existing but invisible to the user- ie, not visible, and not in taskbar)
-- setWindowTitlebarTransparent()
+| Function                                                        | Utility                                                                                                                                                                       |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ```setWindowDarkMode(HWND hWnd, bool darkMode)```               | Sets a window's ```DWMWA_USE_IMMERSIVE_DARK_MODE``` flag to ```TRUE``` or ```FALSE```.                                                                                        |
+| ```setWindowRoundedCorners(HWND hWnd, bool rounded)```          | Sets a window's ```DWMWA_WINDOW_CORNER_PREFERENCE``` attribute to either ```DWMWCP_ROUND``` or ```DWMWCP_DONOTROUND```                                                        |
+| ```setWindowCloaked(HWND hWnd, bool cloaked)```                 | Sets a window's ```DWMWA_CLOAK``` attribute to ```TRUE``` or ```FALSE```. When a window is cloaked both the window and task bar icon for the window are hidden from the user. |
+| ```setWindowTitlebarTransparent(HWND hWnd, bool transparent)``` | Sets a window's ```DWMWA_SYSTEMBACKDROP_TYPE``` attribute to ```DWMSBT_TRANSIENTWINDOW``` or ```DWMSBT_MAINWINDOW```.                                                         |
