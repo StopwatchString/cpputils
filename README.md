@@ -16,12 +16,13 @@ A collection of header-only implementation includes to help speed up development
 
 ## cpputils/SharedMemory.h
 
-A header-only RAII implementation of an OS interprocess shared memory datatype. Uses a key and a 64bit uint to open a mapped piece of shared memory in either Windows or Linux. Provides a simple interface with just two getters:
+A RAII implementation of an OS interprocess shared memory datatype. Uses a key and a 64bit uint to open a mapped piece of shared memory in either Windows or Linux. Interface:
 
-```cpp
-void data() { return pData; }
-size_t size() const { return sizeBytes; }
-```
+| Function                                                 | Utility                                                                                                                                                      |
+|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ```SharedMemory(const std::string& key, size_t bytes)``` | Constructor. Copy and move constructors disabled.                                                                                                            |
+| ```void* data()```                                       | Returns a copy of the pointer to the underlying OS shared memory. If ```data() == nullptr```, then allocation of the OS shared memory has failed.            |
+| ```size_t size()```                                      | Returns the requested size passed to the object on creation. Does not change, even if allocation failed. Nullptr check data() for validity checking instead. |
 
 ## cpputils/windows/handle_utils.h
 
