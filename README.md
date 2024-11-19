@@ -6,7 +6,7 @@ A collection of header-only implementation includes to help speed up development
 
 [Interprocess Mutex](#cpputils/interprocesmutex)
 
-## cpputils/InterprocessMutex
+## cpputils/InterprocessMutex.h
 
 ## cpputils/InterprocessMutexLockGuard
 
