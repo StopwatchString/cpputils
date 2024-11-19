@@ -2,17 +2,9 @@
 
 A collection of header-only implementation includes to help speed up development. The existing utilities mostly focus on OS interaction, but more general tools will eventually pop up.
 
-## File Structure
+## Table of Contents
 
-include/
-├─ cpputils/
-│  ├─ InterprocessMutex.h
-│  ├─ InterprocessMutexLockGuard.h
-│  ├─ SharedLibraryLoader.h
-│  ├─ SharedMemory.h
-│  ├─ windows/
-│  │  ├─ handle_utils.h
-│  │  ├─ dwm.h
+[Interprocess Mutex](#cpputils/interprocesmutex)
 
 ## cpputils/InterprocessMutex
 
