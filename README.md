@@ -4,9 +4,9 @@ A collection of header-only implementation includes to help speed up development
 
 ## Table of Contents
 
-[Interprocess Mutex](#cpputilsinterprocesmutexh)
+[Interprocess Mutex](#cpputilsinterprocessmutexh)
 
-[InterprocessMutexLockGuard](#cpputilsinterpocessmutexlockguardh)
+[InterprocessMutexLockGuard](#cpputilsinterprocessmutexlockguardh)
 
 ## cpputils/InterprocessMutex.h
 
