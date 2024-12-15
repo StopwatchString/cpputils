@@ -14,7 +14,7 @@
 #include <dwmapi.h>
 
 const std::string DWM_API_DLL_NAME{ "dwmapi.dll" };
-SharedLibraryLoader dwmApiLibrary(DWM_API_DLL_NAME);
+static SharedLibraryLoader dwmApiLibrary(DWM_API_DLL_NAME);
 
 //-----------------------------------------------------
 // PFN_DWM_SET_WINDOW_ATTRIBUTE
