@@ -22,6 +22,11 @@ std::same_as<T, std::chrono::seconds> ||
 std::same_as<T, std::chrono::minutes> ||
 std::same_as<T, std::chrono::hours>;
 
+template <typename T>
+concept OutputStream = requires(T& stream, long long durationCount) {
+    { stream << durationCount } -> std::same_as<T&>;
+};
+
 //------------------------------------------------------------
 // class ImmutableTimer
 //------------------------------------------------------------
@@ -83,20 +88,23 @@ private:
 //------------------------------------------------------------
 // class ScopePrintTimer
 //------------------------------------------------------------
-template <Clock clockType, ChronoDuration durationType>
+template <Clock clockType, ChronoDuration durationType, OutputStream outputStreamType = std::ostream>
 class ScopePrintTimer {
 public:
-    ScopePrintTimer(const std::string& printoutPrefix) : _printoutPrefix(printoutPrefix)
+    ScopePrintTimer(const std::string& printoutPrefix, outputStreamType& ostream = std::cout)
+        : _printoutPrefix(printoutPrefix),
+          _ostream(ostream)
     {
         startTime = clockType::now();
     }
 
     ~ScopePrintTimer() {
-        std::cout << _printoutPrefix << std::chrono::duration_cast<durationType>(clockType::now() - startTime).count() << std::endl;
+        _ostream << _printoutPrefix << std::chrono::duration_cast<durationType>(clockType::now() - startTime).count() << std::endl;
     }
 
 private:
     clockType::time_point startTime;
+    outputStreamType& _ostream;
     const std::string _printoutPrefix;
 };
 
