@@ -2,6 +2,10 @@
 
 A collection of header-only implementation includes to help speed up development. The existing utilities mostly focus on OS interaction, but more general tools will eventually pop up.
 
+## Implementation Selection
+
+When relevant, the implementation will be selected through the use of the ```__cplusplus``` preprocessor macro. Notably, MSVC does not by default support this preprocessor macro and defines its own, for some reason. In order to enable it, you must add the ```/Zc:__cplusplus``` option to your build to enable this option being set. Otherwise your implementation will default to the version with the lowest version requirements (or not work at all out of the box). Blame Microsoft.
+
 ## Table of Contents
 
 [Interprocess Mutex](#cpputilsinterprocessmutexh)
