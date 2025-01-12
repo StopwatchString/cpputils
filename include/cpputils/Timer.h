@@ -1,10 +1,13 @@
 #ifndef CPPUTILS_TIMER_H
 #define CPPUTILS_TIMER_H
 
+#include "languageChecking.h"
+
 #include <chrono>
 #include <iostream>
+#include <array>
 
-#if __cplusplus >= 202002L
+#if LANGUAGE_VERSION(202002L)
 #include <concepts>
 
 template <typename T>
@@ -83,6 +86,46 @@ public:
 
 private:
     clockType::time_point startTime;
+};
+
+//------------------------------------------------------------
+// class StatsTimer
+//------------------------------------------------------------
+template <Clock clockType, size_t retainedTimingsSize>
+class StatsTimer {
+public:
+    StatsTimer() {}
+
+    void reset() {
+        timings.fill(std::chrono::nanoseconds(0));
+        index = 0;
+    }
+
+    void start() {
+        lastMeasuredTime = clockType::now();
+    }
+
+    void stop() {
+        std::chrono::nanoseconds elapsedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(clockType::now() - lastMeasuredTime);
+        timings[index] = elapsedTime;
+        index = (index + 1) % retainedTimingsSize;
+    }
+
+    int64_t getAvgTimeMs() {
+        int64_t totalTime = 0;
+        for (const std::chrono::nanoseconds& timingNs : timings) {
+            const std::chrono::milliseconds timingMs = std::chrono::duration_cast<std::chrono::milliseconds>(timingNs);
+            totalTime += timingMs.count();
+        }
+        totalTime /= retainedTimingsSize;
+        return totalTime;
+    }
+
+private:
+    clockType::time_point lastMeasuredTime{};
+    std::array<std::chrono::nanoseconds, retainedTimingsSize> timings;
+    size_t index{ 0 };
+
 };
 
 //------------------------------------------------------------
