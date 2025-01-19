@@ -1,11 +1,13 @@
+#include <array>
 #include <mutex>
 
 //------------------------------------------------------------
 // class WriteSafeLockFree
 //------------------------------------------------------------
-template <typename T, size_t BUFFER_SIZE>
+template <typename T>
 class WriteSafeLockFree
 {
+    static constexpr size_t BUFFER_SIZE = 3;
 public:
     //------------------------------------------------------------
     // Constructor
@@ -36,7 +38,7 @@ public:
     //------------------------------------------------------------
     // Copy Constructor
     //------------------------------------------------------------
-    WriteSafeLockFree(const WriteSafeLockFree<T, BUFFER_SIZE>& other)
+    WriteSafeLockFree(const WriteSafeLockFree<T>& other)
     {
         // TODO
     }
@@ -44,7 +46,7 @@ public:
     //------------------------------------------------------------
     // Copy Assignment
     //------------------------------------------------------------
-    WriteSafeLockFree<T, BUFFER_SIZE>& operator=(const WriteSafeLockFree<T, BUFFER_SIZE>& other)
+    WriteSafeLockFree<T>& operator=(const WriteSafeLockFree<T>& other)
     {
         // TODO
     }
@@ -52,7 +54,7 @@ public:
     //------------------------------------------------------------
     // Move Constructor
     //------------------------------------------------------------
-    WriteSafeLockFree(WriteSafeLockFree<T, BUFFER_SIZE>&& other) noexcept
+    WriteSafeLockFree(WriteSafeLockFree<T>&& other) noexcept
     {
         // TODO
     }
@@ -60,7 +62,7 @@ public:
     //------------------------------------------------------------
     // Move Assignment
     //------------------------------------------------------------
-    WriteSafeLockFree<T, BUFFER_SIZE>& operator=(WriteSafeLockFree<T, BUFFER_SIZE>&& other) noexcept
+    WriteSafeLockFree<T>& operator=(WriteSafeLockFree<T>&& other) noexcept
     {
         // TODO
     }
@@ -83,8 +85,11 @@ public:
         readIndex = (readIndex + 1) % BUFFER_SIZE;
     }
 
+    template <typename U>
+    void set(const U& data) = delete;
+
 private:
-    T ringBuffer[BUFFER_SIZE]{};
+    std::array<T, BUFFER_SIZE> ringBuffer{};
     size_t readIndex{ 0 };
     std::mutex write;
 };

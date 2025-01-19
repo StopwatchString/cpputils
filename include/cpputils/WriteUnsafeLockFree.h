@@ -1,9 +1,15 @@
+#ifndef CPPUTILS_WRITE_UNSAFE_LOCK_FREE_H
+#define CPPUTILS_WRITE_UNSAFE_LOCK_FREE_H
+
+#include <array>
+
 //------------------------------------------------------------
 // class WriteUnsafeLockFree
 //------------------------------------------------------------
-template <typename T, size_t BUFFER_SIZE>
+template <typename T>
 class WriteUnsafeLockFree
 {
+    static constexpr size_t BUFFER_SIZE = 3;
 public:
     //------------------------------------------------------------
     // Constructor
@@ -28,39 +34,46 @@ public:
     //------------------------------------------------------------
     ~WriteUnsafeLockFree()
     {
-        // TODO
     }
 
     //------------------------------------------------------------
     // Copy Constructor
     //------------------------------------------------------------
-    WriteUnsafeLockFree(const WriteUnsafeLockFree<T, BUFFER_SIZE>& other)
+    WriteUnsafeLockFree(const WriteUnsafeLockFree<T>& other)
+        : ringBuffer(other.ringBuffer),
+          readIndex(other.readIndex)
     {
-        // TODO
     }
 
     //------------------------------------------------------------
     // Copy Assignment
     //------------------------------------------------------------
-    WriteUnsafeLockFree<T, BUFFER_SIZE>& operator=(const WriteUnsafeLockFree<T, BUFFER_SIZE>& other)
+    WriteUnsafeLockFree<T>& operator=(const WriteUnsafeLockFree<T>& other)
     {
-        // TODO
+        ringBuffer = other.ringBuffer;
+        readIndex = other.readIndex;
     }
 
     //------------------------------------------------------------
     // Move Constructor
     //------------------------------------------------------------
-    WriteUnsafeLockFree(WriteUnsafeLockFree<T, BUFFER_SIZE>&& other) noexcept
+    WriteUnsafeLockFree(WriteUnsafeLockFree<T>&& other) noexcept
+        : ringBuffer(std::move(other.ringBuffer)),
+          readIndex(other.readIndex)
     {
-        // TODO
+        other.ringBuffer = {};
+        other.readIndex = 0;
     }
 
     //------------------------------------------------------------
     // Move Assignment
     //------------------------------------------------------------
-    WriteUnsafeLockFree<T, BUFFER_SIZE>& operator=(WriteUnsafeLockFree<T, BUFFER_SIZE>&& other) noexcept
+    WriteUnsafeLockFree<T>& operator=(WriteUnsafeLockFree<T>&& other) noexcept
     {
-        // TODO
+        if (this != &other) {
+            ringBuffer = std::move(other.ringBuffer);
+            readIndex = other.readIndex;
+        }
     }
 
     //------------------------------------------------------------
@@ -81,6 +94,8 @@ public:
     }
 
 private:
-    T ringBuffer[BUFFER_SIZE]{};
+    std::array<T, BUFFER_SIZE> ringBuffer{};
     size_t readIndex{ 0 };
 };
+
+#endif
