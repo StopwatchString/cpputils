@@ -11,10 +11,11 @@ from Daniel Anderson's CppCon 2024 Talk 'Introduction to Wait-free Algorithms'
 youtube link: https://youtu.be/kPh8pod0-gk?si=zFQRgrVCA8OsBja0
 */
 
-struct Counter {
+class Counter {
     static constexpr uint64_t is_zero = 1ull << 63;
     static constexpr uint64_t helped = 1ull << 62;
 
+public:
     bool increment_if_not_zero() {
         return (counter.fetch_add(1) & is_zero) == 0;
     }
@@ -33,6 +34,7 @@ struct Counter {
         return (val & is_zero) ? 0 : val;
     }
 
+private:
     std::atomic<uint64_t> counter{ 1 };
 };
 
