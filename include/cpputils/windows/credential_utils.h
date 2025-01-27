@@ -20,6 +20,9 @@
 
 #include <string>
 
+namespace cpputils {
+namespace windows {
+
 const std::string ADV_API_DLL_NAME{ "Advapi32.dll" };
 static SharedLibraryLoader dwmApiLibrary(ADV_API_DLL_NAME);
 
@@ -111,5 +114,8 @@ static bool deleteCredential(std::string targetName)
 
     return result == TRUE;
 }
+
+} // End windows namespace
+} // End cpputils namespace
 
 #endif

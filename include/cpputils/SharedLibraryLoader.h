@@ -10,6 +10,8 @@
 #include <string>
 #include <iostream>
 
+namespace cpputils {
+
 //-----------------------------------------------------
 // class SharedLibraryLoader
 // 
@@ -95,5 +97,7 @@ private:
     // TODO:: Linux Implementation
 #endif
 };
+
+} // End cpputils namespace
 
 #endif

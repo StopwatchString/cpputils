@@ -1,5 +1,10 @@
+#ifndef CPPUTILS_WRITE_SAFE_LOCK_FREE_H
+#define CPPUTILS_WRITE_SAFE_LOCK_FREE_H
+
 #include <array>
 #include <mutex>
+
+namespace cpputils {
 
 //------------------------------------------------------------
 // class WriteSafeLockFree
@@ -93,3 +98,7 @@ private:
     size_t readIndex{ 0 };
     std::mutex write;
 };
+
+} // End cpputils namespace
+
+#endif

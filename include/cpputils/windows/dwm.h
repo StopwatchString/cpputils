@@ -13,6 +13,9 @@
 #include <windows.h>
 #include <dwmapi.h>
 
+namespace cpputils {
+namespace windows {
+
 const std::string DWM_API_DLL_NAME{ "dwmapi.dll" };
 static SharedLibraryLoader dwmApiLibrary(DWM_API_DLL_NAME);
 
@@ -106,5 +109,8 @@ static bool setWindowTitlebarTransparent(HWND hWnd, bool transparent)
     );
     return hr == S_OK;
 }
+
+} // End windows namespace
+} // End cpputils namespace
 
 #endif

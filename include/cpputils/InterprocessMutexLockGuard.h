@@ -3,6 +3,9 @@
 
 #include "cpputils\InterprocessMutex.h"
 
+namespace cpputils {
+
+
 class InterprocessMutexLockGuard
 {
 public:
@@ -20,5 +23,7 @@ public:
 private:
     InterprocessMutex& mutex;
 };
+
+} // End cpputils namespace
 
 #endif

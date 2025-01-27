@@ -3,6 +3,8 @@
 
 #include <array>
 
+namespace cpputils {
+
 //------------------------------------------------------------
 // class WriteUnsafeLockFree
 //------------------------------------------------------------
@@ -97,5 +99,7 @@ private:
     std::array<T, BUFFER_SIZE> ringBuffer{};
     size_t readIndex{ 0 };
 };
+
+} // End cpputils namespace
 
 #endif

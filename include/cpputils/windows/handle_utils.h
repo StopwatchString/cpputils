@@ -5,6 +5,9 @@
 
 #include <iostream>
 
+namespace cpputils {
+namespace windows {
+
 //-----------------------------------------------
 // duplicateHandle()
 //-----------------------------------------------
@@ -58,5 +61,8 @@ static HANDLE getSourceProcessHandleFromHwnd(HWND hWnd)
 
     return hProcess;
 }
+
+} // End windows namespace
+} // End cpputils namespace
 
 #endif

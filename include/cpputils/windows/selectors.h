@@ -7,6 +7,9 @@
 #include <string>
 #include <iostream>
 
+namespace cpputils {
+namespace windows {
+
 //-----------------------------------------------------
 // wstring_to_string()
 //-----------------------------------------------------
@@ -72,5 +75,8 @@ std::string OpenWindowsFolderDialogue(bool printErrors = false) {
 
     return folderPath;
 }
+
+} // End windows namespace
+} // End cpputils namespace
 
 #endif

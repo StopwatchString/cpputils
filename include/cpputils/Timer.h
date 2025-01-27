@@ -10,6 +10,8 @@
 #if LANGUAGE_VERSION(202002L)
 #include <concepts>
 
+namespace cpputils {
+
 template <typename T>
 concept Clock = requires {
     typename T::time_point;
@@ -285,5 +287,7 @@ private:
 };
 
 #endif
+
+} // End cpputils namespace
 
 #endif // End CPPUTILS_TIMER_H

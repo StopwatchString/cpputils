@@ -10,6 +10,9 @@
 #elif defined (__linux__)
     // TODO:: Linux Implementation
 #endif
+
+namespace cpputils {
+
 //------------------------------------------------------------
 // class SharedMemory
 //------------------------------------------------------------
@@ -115,5 +118,7 @@ private:
 #endif
     }
 };
+
+} // End cpputils namespace
 
 #endif

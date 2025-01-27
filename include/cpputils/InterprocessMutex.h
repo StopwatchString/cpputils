@@ -11,6 +11,8 @@
     // TODO:: Linux Implementation
 #endif
 
+namespace cpputils {
+
 //------------------------------------------------------------
 // class InterprocessMutex
 //------------------------------------------------------------
@@ -100,5 +102,7 @@ private:
     }
 
 };
+
+} // End cpputils namespace
 
 #endif
