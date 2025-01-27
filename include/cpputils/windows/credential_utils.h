@@ -6,6 +6,9 @@
 // 
 // A set of functions for quick and simple interaction
 // with the Windows Credential Manager.
+// 
+// These implementations all default to generic usage
+// and only use local machine persistence.
 //-----------------------------------------------------
 
 #include "cpputils/SharedLibraryLoader.h"
