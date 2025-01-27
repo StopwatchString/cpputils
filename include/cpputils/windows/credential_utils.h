@@ -23,33 +23,40 @@
 const std::string ADV_API_DLL_NAME{ "Advapi32.dll" };
 static SharedLibraryLoader dwmApiLibrary(ADV_API_DLL_NAME);
 
+struct Credential {
+    std::string username;
+    std::string credentialBlob;
+};
+
 //-----------------------------------------------------
 // writeCredential()
 // - Target name length must be <= 32767
 // - Credential must be <= 2560 Bytes
+// Username is optional and can be left blank.
 // Returns if credential write was successful.
 //-----------------------------------------------------
-static bool writeCredential(std::string name, std::string credentialString)
+static bool writeCredential(std::string targetName, Credential credential)
 {
-    if (name.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return false;
-    if (credentialString.size() > CRED_MAX_CREDENTIAL_BLOB_SIZE) return false;
+    if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return false;
+    if (credential.username.length() > CRED_MAX_USERNAME_LENGTH) return false;
+    if (credential.credentialBlob.size() > CRED_MAX_CREDENTIAL_BLOB_SIZE) return false;
 
-    _CREDENTIALA credential = { 0 };
-    credential.Flags;
-    credential.Type = CRED_TYPE_GENERIC;
-    credential.TargetName = (LPSTR)name.c_str();
-    credential.Comment;
-    credential.LastWritten;
-    credential.CredentialBlobSize = credentialString.size();
-    credential.CredentialBlob = (LPBYTE)credentialString.data();
-    credential.Persist = CRED_PERSIST_LOCAL_MACHINE;
-    credential.AttributeCount;
-    credential.Attributes;
-    credential.TargetAlias;
-    credential.UserName; // Optional for CRED_TYPE_GENERIC, Corresponds to stored username for credential.
+    _CREDENTIALA credentialStruct = { 0 };
+    credentialStruct.Flags;
+    credentialStruct.Type = CRED_TYPE_GENERIC;
+    credentialStruct.TargetName = (LPSTR)targetName.c_str();
+    credentialStruct.Comment;
+    credentialStruct.LastWritten;
+    credentialStruct.CredentialBlobSize = credential.credentialBlob.size();
+    credentialStruct.CredentialBlob = (LPBYTE)credential.credentialBlob.data();
+    credentialStruct.Persist = CRED_PERSIST_LOCAL_MACHINE;
+    credentialStruct.AttributeCount;
+    credentialStruct.Attributes;
+    credentialStruct.TargetAlias;
+    credentialStruct.UserName = (LPSTR)credential.username.c_str();
 
     BOOL result = CredWriteA(
-        &credential,
+        &credentialStruct,
         NULL
     );
 
@@ -61,27 +68,30 @@ static bool writeCredential(std::string name, std::string credentialString)
 // - Target name length must be <= 32767
 // Returns credential string if valid, otherwise empty string.
 //-----------------------------------------------------
-static std::string readCredential(std::string name)
+static Credential readCredential(std::string targetName)
 {
-    if (name.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return "";
+    if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return Credential();
 
     PCREDENTIALA pCredential = nullptr;
     BOOL result = CredReadA(
-        (LPSTR)name.c_str(),
+        (LPSTR)targetName.c_str(),
         CRED_TYPE_GENERIC,
         NULL,
         &pCredential
     );
 
-    if (result == FALSE) return "";
+    if (result == FALSE) return Credential();
 
-    std::string credentialString;
-    credentialString.resize(pCredential->CredentialBlobSize);
-    memcpy(credentialString.data(), pCredential->CredentialBlob, pCredential->CredentialBlobSize);
+    Credential credential;
+
+    credential.username = pCredential->UserName;
+
+    credential.credentialBlob.resize(pCredential->CredentialBlobSize);
+    memcpy(credential.credentialBlob.data(), pCredential->CredentialBlob, pCredential->CredentialBlobSize);
 
     CredFree(pCredential);
 
-    return credentialString;
+    return credential;
 }
 
 //-----------------------------------------------------
@@ -89,12 +99,12 @@ static std::string readCredential(std::string name)
 // - Target name length must be <= 32767
 // Returns if credential was successfully deleted.
 //-----------------------------------------------------
-static bool deleteCredential(std::string name)
+static bool deleteCredential(std::string targetName)
 {
-    if (name.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return false;
+    if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return false;
 
     BOOL result = CredDeleteA(
-        (LPSTR)name.c_str(),
+        (LPSTR)targetName.c_str(),
         CRED_TYPE_GENERIC,
         NULL
     );
