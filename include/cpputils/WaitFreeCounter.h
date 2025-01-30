@@ -28,6 +28,7 @@ public:
         }
         return false;
     }
+    
     uint64_t read() {
         auto val = counter.load();
         if (val == 0 && counter.compare_exchange_strong(val, is_zero | helped)) return 0;
