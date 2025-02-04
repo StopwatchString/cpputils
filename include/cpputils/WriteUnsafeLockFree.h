@@ -22,10 +22,7 @@ public:
     //------------------------------------------------------------
     // Constructor
     //------------------------------------------------------------
-    WriteUnsafeLockFree(const T& data) : readIndex(0)
-    {
-        ringBuffer[0] = data;
-    }
+    WriteUnsafeLockFree(const T& data) : readIndex(0) { ringBuffer[0] = data; }
 
     //------------------------------------------------------------
     // Destructor
@@ -71,10 +68,7 @@ public:
     //------------------------------------------------------------
     // get()
     //------------------------------------------------------------
-    const T& get() const
-    {
-        return ringBuffer[readIndex];
-    }
+    const T& get() const { return ringBuffer[readIndex]; }
 
     //------------------------------------------------------------
     // set()

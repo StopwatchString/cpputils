@@ -19,15 +19,9 @@ namespace cpputils {
 class SharedMemory
 {
 public:
-    SharedMemory(const std::string& key, size_t sizeBytes) : key(key), sizeBytes(sizeBytes)
-    {
-        openSharedMemory();
-    }
+    SharedMemory(const std::string& key, size_t sizeBytes) : key(key), sizeBytes(sizeBytes) { openSharedMemory(); }
 
-    ~SharedMemory()
-    {
-        closeSharedMemory();
-    }
+    ~SharedMemory() { closeSharedMemory(); }
 
     // No copy operations for now
     SharedMemory(const SharedMemory& other) = delete;
@@ -37,14 +31,8 @@ public:
     SharedMemory(SharedMemory&& other) noexcept = delete;
     SharedMemory& operator=(SharedMemory&& other) noexcept = delete;
 
-    void* data()
-    {
-        return pData;
-    }
-    size_t size() const
-    {
-        return sizeBytes;
-    }
+    void* data() { return pData; }
+    size_t size() const { return sizeBytes; }
 
 private:
     void* pData{nullptr};

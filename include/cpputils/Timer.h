@@ -35,10 +35,7 @@ template<Clock clockType>
 class ImmutableTimer
 {
 public:
-    ImmutableTimer()
-    {
-        startTime = clockType::now();
-    }
+    ImmutableTimer() { startTime = clockType::now(); }
 
     int64_t getElapsedTimeMs() const
     {
@@ -67,15 +64,9 @@ template<Clock clockType>
 class ResettableTimer
 {
 public:
-    ResettableTimer()
-    {
-        startTime = clockType::now();
-    }
+    ResettableTimer() { startTime = clockType::now(); }
 
-    void reset()
-    {
-        startTime = clockType::now();
-    }
+    void reset() { startTime = clockType::now(); }
 
     int64_t getElapsedTimeMs() const
     {
@@ -112,10 +103,7 @@ public:
         index = 0;
     }
 
-    void start()
-    {
-        lastMeasuredTime = clockType::now();
-    }
+    void start() { lastMeasuredTime = clockType::now(); }
 
     void stop()
     {
@@ -229,10 +217,7 @@ template<typename ClockType, typename std::enable_if<is_clock<ClockType>::value,
 class ImmutableTimer
 {
 public:
-    ImmutableTimer()
-    {
-        startTime = ClockType::now();
-    }
+    ImmutableTimer() { startTime = ClockType::now(); }
 
     int64_t getElapsedTimeMs() const
     {
@@ -261,15 +246,9 @@ template<typename ClockType, typename std::enable_if<is_clock<ClockType>::value,
 class ResettableTimer
 {
 public:
-    ResettableTimer()
-    {
-        startTime = ClockType::now();
-    }
+    ResettableTimer() { startTime = ClockType::now(); }
 
-    void reset()
-    {
-        startTime = ClockType::now();
-    }
+    void reset() { startTime = ClockType::now(); }
 
     int64_t getElapsedTimeMs() const
     {

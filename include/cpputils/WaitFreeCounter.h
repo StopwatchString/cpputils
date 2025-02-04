@@ -17,10 +17,7 @@ class Counter
     static constexpr uint64_t helped = 1ull << 62;
 
 public:
-    bool increment_if_not_zero()
-    {
-        return (counter.fetch_add(1) & is_zero) == 0;
-    }
+    bool increment_if_not_zero() { return (counter.fetch_add(1) & is_zero) == 0; }
 
     bool decrement()
     {

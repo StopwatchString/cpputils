@@ -19,15 +19,9 @@ namespace cpputils {
 class InterprocessMutex
 {
 public:
-    InterprocessMutex(const std::string& key) : key(key), locked(false)
-    {
-        createInterprocessMutex();
-    }
+    InterprocessMutex(const std::string& key) : key(key), locked(false) { createInterprocessMutex(); }
 
-    ~InterprocessMutex()
-    {
-        closeInterprocessMutex();
-    }
+    ~InterprocessMutex() { closeInterprocessMutex(); }
 
     void lock()
     {

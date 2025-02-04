@@ -8,15 +8,9 @@ namespace cpputils {
 class InterprocessMutexLockGuard
 {
 public:
-    InterprocessMutexLockGuard(InterprocessMutex& mutex) : mutex(mutex)
-    {
-        mutex.lock();
-    }
+    InterprocessMutexLockGuard(InterprocessMutex& mutex) : mutex(mutex) { mutex.lock(); }
 
-    ~InterprocessMutexLockGuard()
-    {
-        mutex.unlock();
-    }
+    ~InterprocessMutexLockGuard() { mutex.unlock(); }
 
 private:
     InterprocessMutex& mutex;
