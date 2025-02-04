@@ -24,7 +24,8 @@ void wstring_to_string(std::wstring& wstring, std::string& string)
 //-----------------------------------------------------
 // OpenWindowsFolderDialogue()
 //-----------------------------------------------------
-std::string OpenWindowsFolderDialogue(bool printErrors = false) {
+std::string OpenWindowsFolderDialogue(bool printErrors = false)
+{
     // Initialize COM
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (FAILED(hr)) {
@@ -76,7 +77,7 @@ std::string OpenWindowsFolderDialogue(bool printErrors = false) {
     return folderPath;
 }
 
-} // End windows namespace
-} // End cpputils namespace
+} // namespace windows
+} // namespace cpputils
 
 #endif

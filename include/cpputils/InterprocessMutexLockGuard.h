@@ -5,12 +5,10 @@
 
 namespace cpputils {
 
-
 class InterprocessMutexLockGuard
 {
 public:
-    InterprocessMutexLockGuard(InterprocessMutex& mutex)
-        : mutex(mutex)
+    InterprocessMutexLockGuard(InterprocessMutex& mutex) : mutex(mutex)
     {
         mutex.lock();
     }
@@ -24,6 +22,6 @@ private:
     InterprocessMutex& mutex;
 };
 
-} // End cpputils namespace
+} // namespace cpputils
 
 #endif

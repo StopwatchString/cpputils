@@ -9,25 +9,21 @@ namespace cpputils {
 //------------------------------------------------------------
 // class WriteSafeLockFree
 //------------------------------------------------------------
-template <typename T>
+template<typename T>
 class WriteSafeLockFree
 {
     static constexpr size_t BUFFER_SIZE = 3;
+
 public:
     //------------------------------------------------------------
     // Constructor
     //------------------------------------------------------------
-    WriteSafeLockFree()
-        : readIndex(0)
-    {
-
-    }
+    WriteSafeLockFree() : readIndex(0) {}
 
     //------------------------------------------------------------
     // Constructor
     //------------------------------------------------------------
-    WriteSafeLockFree(const T& data)
-        : readIndex(0)
+    WriteSafeLockFree(const T& data) : readIndex(0)
     {
         ringBuffer[0] = data;
     }
@@ -90,15 +86,15 @@ public:
         readIndex = (readIndex + 1) % BUFFER_SIZE;
     }
 
-    template <typename U>
+    template<typename U>
     void set(const U& data) = delete;
 
 private:
     std::array<T, BUFFER_SIZE> ringBuffer{};
-    size_t readIndex{ 0 };
+    size_t readIndex{0};
     std::mutex write;
 };
 
-} // End cpputils namespace
+} // namespace cpputils
 
 #endif

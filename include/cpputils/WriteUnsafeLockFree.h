@@ -8,25 +8,21 @@ namespace cpputils {
 //------------------------------------------------------------
 // class WriteUnsafeLockFree
 //------------------------------------------------------------
-template <typename T>
+template<typename T>
 class WriteUnsafeLockFree
 {
     static constexpr size_t BUFFER_SIZE = 3;
+
 public:
     //------------------------------------------------------------
     // Constructor
     //------------------------------------------------------------
-    WriteUnsafeLockFree()
-        : readIndex(0)
-    {
-
-    }
+    WriteUnsafeLockFree() : readIndex(0) {}
 
     //------------------------------------------------------------
     // Constructor
     //------------------------------------------------------------
-    WriteUnsafeLockFree(const T& data)
-        : readIndex(0)
+    WriteUnsafeLockFree(const T& data) : readIndex(0)
     {
         ringBuffer[0] = data;
     }
@@ -34,18 +30,13 @@ public:
     //------------------------------------------------------------
     // Destructor
     //------------------------------------------------------------
-    ~WriteUnsafeLockFree()
-    {
-    }
+    ~WriteUnsafeLockFree() {}
 
     //------------------------------------------------------------
     // Copy Constructor
     //------------------------------------------------------------
-    WriteUnsafeLockFree(const WriteUnsafeLockFree<T>& other)
-        : ringBuffer(other.ringBuffer),
-          readIndex(other.readIndex)
-    {
-    }
+    WriteUnsafeLockFree(const WriteUnsafeLockFree<T>& other) : ringBuffer(other.ringBuffer), readIndex(other.readIndex)
+    {}
 
     //------------------------------------------------------------
     // Copy Assignment
@@ -59,9 +50,8 @@ public:
     //------------------------------------------------------------
     // Move Constructor
     //------------------------------------------------------------
-    WriteUnsafeLockFree(WriteUnsafeLockFree<T>&& other) noexcept
-        : ringBuffer(std::move(other.ringBuffer)),
-          readIndex(other.readIndex)
+    WriteUnsafeLockFree(WriteUnsafeLockFree<T>&& other) noexcept :
+        ringBuffer(std::move(other.ringBuffer)), readIndex(other.readIndex)
     {
         other.ringBuffer = {};
         other.readIndex = 0;
@@ -97,9 +87,9 @@ public:
 
 private:
     std::array<T, BUFFER_SIZE> ringBuffer{};
-    size_t readIndex{ 0 };
+    size_t readIndex{0};
 };
 
-} // End cpputils namespace
+} // namespace cpputils
 
 #endif

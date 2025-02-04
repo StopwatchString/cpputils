@@ -14,9 +14,9 @@ namespace windows {
 static HANDLE duplicateHandle(DWORD sourceProcessId, HANDLE hSourceHandle)
 {
     HANDLE hSourceProcessHandle = OpenProcess(
-        PROCESS_DUP_HANDLE,  // dwDesiredAccess
-        FALSE,               // bInheritHandle
-        sourceProcessId      // dwProcessId
+        PROCESS_DUP_HANDLE, // dwDesiredAccess
+        FALSE,              // bInheritHandle
+        sourceProcessId     // dwProcessId
     );
     if (hSourceProcessHandle == NULL) {
         std::cerr << "ERROR duplicateHandle() Could not get handle for source process!" << std::endl;
@@ -25,13 +25,13 @@ static HANDLE duplicateHandle(DWORD sourceProcessId, HANDLE hSourceHandle)
 
     HANDLE hTargetHandle = NULL;
     DuplicateHandle(
-        hSourceProcessHandle,  // hSourceProcessHandle
-        hSourceHandle,         // hSourceHandle
-        GetCurrentProcess(),   // hTargetProcessHandle
-        &hTargetHandle,        // lpTargetHandle
-        NULL,                  // dwDesiredAccess
-        FALSE,                 // bInheritHandle
-        DUPLICATE_SAME_ACCESS  // dwOptions
+        hSourceProcessHandle, // hSourceProcessHandle
+        hSourceHandle,        // hSourceHandle
+        GetCurrentProcess(),  // hTargetProcessHandle
+        &hTargetHandle,       // lpTargetHandle
+        NULL,                 // dwDesiredAccess
+        FALSE,                // bInheritHandle
+        DUPLICATE_SAME_ACCESS // dwOptions
     );
     if (hTargetHandle == NULL) {
         std::cerr << "ERROR duplicateHandle() Could not create a duplicate of handle!" << std::endl;
@@ -51,18 +51,12 @@ static HANDLE getSourceProcessHandleFromHwnd(HWND hWnd)
     DWORD threadId = GetWindowThreadProcessId(hWnd, lpdwProcessId);
 
     HANDLE hProcess = NULL;
-    if (lpdwProcessId != NULL) {
-        hProcess = OpenProcess(
-            PROCESS_ALL_ACCESS,
-            FALSE,
-            *lpdwProcessId
-        );
-    }
+    if (lpdwProcessId != NULL) { hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, *lpdwProcessId); }
 
     return hProcess;
 }
 
-} // End windows namespace
-} // End cpputils namespace
+} // namespace windows
+} // namespace cpputils
 
 #endif

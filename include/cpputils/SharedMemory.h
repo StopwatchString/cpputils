@@ -7,7 +7,7 @@
 
 #if defined(_WIN32)
     #include <windows.h>
-#elif defined (__linux__)
+#elif defined(__linux__)
     // TODO:: Linux Implementation
 #endif
 
@@ -19,9 +19,7 @@ namespace cpputils {
 class SharedMemory
 {
 public:
-    SharedMemory(const std::string& key, size_t sizeBytes)
-        : key(key),
-          sizeBytes(sizeBytes)
+    SharedMemory(const std::string& key, size_t sizeBytes) : key(key), sizeBytes(sizeBytes)
     {
         openSharedMemory();
     }
@@ -39,19 +37,25 @@ public:
     SharedMemory(SharedMemory&& other) noexcept = delete;
     SharedMemory& operator=(SharedMemory&& other) noexcept = delete;
 
-    void* data() { return pData; }
-    size_t size() const { return sizeBytes; }
+    void* data()
+    {
+        return pData;
+    }
+    size_t size() const
+    {
+        return sizeBytes;
+    }
 
 private:
-    void* pData{ nullptr };
+    void* pData{nullptr};
     std::string key;
-    size_t sizeBytes{ 0 };
+    size_t sizeBytes{0};
 
     // Platform-specific members
 #if defined(_WIN32)
-    HANDLE hFileMapping{ NULL };
+    HANDLE hFileMapping{NULL};
 #elif defined(__linux__)
-    // TODO:: Linux Implementation
+        // TODO:: Linux Implementation
 #endif
 
     //------------------------------------------------------------
@@ -64,36 +68,40 @@ private:
         uint32_t upper = static_cast<uint32_t>((sizeBytes >> 32) & 0xFFFFFFFF);
 
         hFileMapping = CreateFileMappingA(
-            INVALID_HANDLE_VALUE,  // File backing the mapping. When NULL, system paging file is used (shared memory)
-            NULL,                  // Security params, NULL == default security
-            PAGE_READWRITE,        // Access params for file mappings
-            upper,                 // High DWORD indicating size
-            lower,                 // Low DWORD indicating size
-            key.c_str()            // Key used to identify this mapping
+            INVALID_HANDLE_VALUE, // File backing the mapping. When NULL, system paging file is used (shared memory)
+            NULL,                 // Security params, NULL == default security
+            PAGE_READWRITE,       // Access params for file mappings
+            upper,                // High DWORD indicating size
+            lower,                // Low DWORD indicating size
+            key.c_str()           // Key used to identify this mapping
         );
 
         if (hFileMapping == NULL) {
-            std::cerr << "ERROR SharedMemory::openSharedMemory() (Windows) CreateFileMappingA returned NULL, could not open file!" << std::endl;
+            std::cerr << "ERROR SharedMemory::openSharedMemory() (Windows) CreateFileMappingA returned NULL, could not "
+                         "open file!"
+                      << std::endl;
             return;
         }
 
         pData = MapViewOfFile(
-            hFileMapping,         // File mapping to map
-            FILE_MAP_ALL_ACCESS,  // Access params for mapped view
-            0,                    // High DWORD offset into file
-            0,                    // Low DWORD offset into file
-            sizeBytes             // Size in bytes to map
+            hFileMapping,        // File mapping to map
+            FILE_MAP_ALL_ACCESS, // Access params for mapped view
+            0,                   // High DWORD offset into file
+            0,                   // Low DWORD offset into file
+            sizeBytes            // Size in bytes to map
         );
 
         if (pData == nullptr) {
-            std::cerr << "ERROR SharedMemory::openSharedMemory() (Windows) MapViewOfFile returned nullptr. Could not get pointer to shared memory!" << std::endl;
+            std::cerr << "ERROR SharedMemory::openSharedMemory() (Windows) MapViewOfFile returned nullptr. Could not "
+                         "get pointer to shared memory!"
+                      << std::endl;
             CloseHandle(hFileMapping);
             hFileMapping = NULL;
             return;
         }
 
-#elif defined (__linux__)
-    // TODO:: Linux Implementation
+#elif defined(__linux__)
+            // TODO:: Linux Implementation
 #endif
     }
 
@@ -113,12 +121,12 @@ private:
             hFileMapping = NULL;
         }
 
-#elif defined (__linux__)
-    // TODO:: Linux Implementation
+#elif defined(__linux__)
+            // TODO:: Linux Implementation
 #endif
     }
 };
 
-} // End cpputils namespace
+} // namespace cpputils
 
 #endif

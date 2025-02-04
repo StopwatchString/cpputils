@@ -8,26 +8,22 @@
 #include <array>
 
 #if LANGUAGE_VERSION(202002L)
-#include <concepts>
+    #include <concepts>
 
 namespace cpputils {
 
-template <typename T>
+template<typename T>
 concept Clock = requires {
     typename T::time_point;
     { T::now() } -> std::convertible_to<typename T::time_point>;
 };
 
-template <typename T>
-concept ChronoDuration =
-std::same_as<T, std::chrono::nanoseconds> ||
-std::same_as<T, std::chrono::microseconds> ||
-std::same_as<T, std::chrono::milliseconds> ||
-std::same_as<T, std::chrono::seconds> ||
-std::same_as<T, std::chrono::minutes> ||
-std::same_as<T, std::chrono::hours>;
+template<typename T>
+concept ChronoDuration = std::same_as<T, std::chrono::nanoseconds> || std::same_as<T, std::chrono::microseconds>
+                         || std::same_as<T, std::chrono::milliseconds> || std::same_as<T, std::chrono::seconds>
+                         || std::same_as<T, std::chrono::minutes> || std::same_as<T, std::chrono::hours>;
 
-template <typename T>
+template<typename T>
 concept OutputStream = requires(T& stream, long long durationCount) {
     { stream << durationCount } -> std::same_as<T&>;
 };
@@ -35,23 +31,28 @@ concept OutputStream = requires(T& stream, long long durationCount) {
 //------------------------------------------------------------
 // class ImmutableTimer
 //------------------------------------------------------------
-template <Clock clockType>
-class ImmutableTimer {
+template<Clock clockType>
+class ImmutableTimer
+{
 public:
-    ImmutableTimer() {
+    ImmutableTimer()
+    {
         startTime = clockType::now();
     }
 
-    int64_t getElapsedTimeMs() const {
+    int64_t getElapsedTimeMs() const
+    {
         return std::chrono::duration_cast<std::chrono::milliseconds>(clockType::now() - startTime).count();
     }
 
-    int64_t getElapsedTimeNs() const {
+    int64_t getElapsedTimeNs() const
+    {
         return std::chrono::duration_cast<std::chrono::nanoseconds>(clockType::now() - startTime).count();
     }
 
-    template <ChronoDuration durationType>
-    durationType getDuration() const {
+    template<ChronoDuration durationType>
+    durationType getDuration() const
+    {
         return std::chrono::duration_cast<durationType>(clockType::now() - startTime);
     }
 
@@ -62,27 +63,33 @@ private:
 //------------------------------------------------------------
 // class ResettableTimer
 //------------------------------------------------------------
-template <Clock clockType>
-class ResettableTimer {
+template<Clock clockType>
+class ResettableTimer
+{
 public:
-    ResettableTimer() {
+    ResettableTimer()
+    {
         startTime = clockType::now();
     }
 
-    void reset() {
+    void reset()
+    {
         startTime = clockType::now();
     }
 
-    int64_t getElapsedTimeMs() const {
+    int64_t getElapsedTimeMs() const
+    {
         return std::chrono::duration_cast<std::chrono::milliseconds>(clockType::now() - startTime).count();
     }
 
-    int64_t getElapsedTimeNs() const {
+    int64_t getElapsedTimeNs() const
+    {
         return std::chrono::duration_cast<std::chrono::nanoseconds>(clockType::now() - startTime).count();
     }
 
-    template <ChronoDuration durationType>
-    durationType getDuration() const {
+    template<ChronoDuration durationType>
+    durationType getDuration() const
+    {
         return std::chrono::duration_cast<durationType>(clockType::now() - startTime);
     }
 
@@ -93,27 +100,33 @@ private:
 //------------------------------------------------------------
 // class StatsTimer
 //------------------------------------------------------------
-template <Clock clockType, size_t retainedTimingsSize>
-class StatsTimer {
+template<Clock clockType, size_t retainedTimingsSize>
+class StatsTimer
+{
 public:
     StatsTimer() {}
 
-    void reset() {
+    void reset()
+    {
         timings.fill(std::chrono::nanoseconds(0));
         index = 0;
     }
 
-    void start() {
+    void start()
+    {
         lastMeasuredTime = clockType::now();
     }
 
-    void stop() {
-        std::chrono::nanoseconds elapsedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(clockType::now() - lastMeasuredTime);
+    void stop()
+    {
+        std::chrono::nanoseconds elapsedTime
+            = std::chrono::duration_cast<std::chrono::nanoseconds>(clockType::now() - lastMeasuredTime);
         timings[index] = elapsedTime;
         index = (index + 1) % retainedTimingsSize;
     }
 
-    int64_t getAvgTimeMs() {
+    int64_t getAvgTimeMs()
+    {
         int64_t totalTime = 0;
         for (const std::chrono::nanoseconds& timingNs : timings) {
             const std::chrono::milliseconds timingMs = std::chrono::duration_cast<std::chrono::milliseconds>(timingNs);
@@ -126,25 +139,26 @@ public:
 private:
     clockType::time_point lastMeasuredTime{};
     std::array<std::chrono::nanoseconds, retainedTimingsSize> timings;
-    size_t index{ 0 };
-
+    size_t index{0};
 };
 
 //------------------------------------------------------------
 // class ScopePrintTimer
 //------------------------------------------------------------
-template <Clock clockType, ChronoDuration durationType, OutputStream outputStreamType = std::ostream>
-class ScopePrintTimer {
+template<Clock clockType, ChronoDuration durationType, OutputStream outputStreamType = std::ostream>
+class ScopePrintTimer
+{
 public:
-    ScopePrintTimer(const std::string& printoutPrefix, outputStreamType& ostream = std::cout)
-        : _printoutPrefix(printoutPrefix),
-          _ostream(ostream)
+    ScopePrintTimer(const std::string& printoutPrefix, outputStreamType& ostream = std::cout) :
+        _printoutPrefix(printoutPrefix), _ostream(ostream)
     {
         startTime = clockType::now();
     }
 
-    ~ScopePrintTimer() {
-        _ostream << _printoutPrefix << std::chrono::duration_cast<durationType>(clockType::now() - startTime).count() << std::endl;
+    ~ScopePrintTimer()
+    {
+        _ostream << _printoutPrefix << std::chrono::duration_cast<durationType>(clockType::now() - startTime).count()
+                 << std::endl;
     }
 
 private:
@@ -153,72 +167,86 @@ private:
     const std::string _printoutPrefix;
 };
 
-
 #else
 
-#include <type_traits>
+    #include <type_traits>
 
 //------------------------------------------------------------
 // Type Traits for Constraints
 //------------------------------------------------------------
 
 // Trait to check if a type is a valid Clock
-template <typename T, typename = void>
-struct is_clock : std::false_type {};
+template<typename T, typename = void>
+struct is_clock : std::false_type
+{};
 
-template <typename T>
-struct is_clock<T, std::void_t<typename T::time_point, decltype(T::now())>> : std::true_type {};
+template<typename T>
+struct is_clock<T, std::void_t<typename T::time_point, decltype(T::now())>> : std::true_type
+{};
 
 // Trait to check if a type is a valid Chrono Duration
-template <typename T>
-struct is_chrono_duration : std::false_type {};
+template<typename T>
+struct is_chrono_duration : std::false_type
+{};
 
-template <>
-struct is_chrono_duration<std::chrono::nanoseconds> : std::true_type {};
+template<>
+struct is_chrono_duration<std::chrono::nanoseconds> : std::true_type
+{};
 
-template <>
-struct is_chrono_duration<std::chrono::microseconds> : std::true_type {};
+template<>
+struct is_chrono_duration<std::chrono::microseconds> : std::true_type
+{};
 
-template <>
-struct is_chrono_duration<std::chrono::milliseconds> : std::true_type {};
+template<>
+struct is_chrono_duration<std::chrono::milliseconds> : std::true_type
+{};
 
-template <>
-struct is_chrono_duration<std::chrono::seconds> : std::true_type {};
+template<>
+struct is_chrono_duration<std::chrono::seconds> : std::true_type
+{};
 
-template <>
-struct is_chrono_duration<std::chrono::minutes> : std::true_type {};
+template<>
+struct is_chrono_duration<std::chrono::minutes> : std::true_type
+{};
 
-template <>
-struct is_chrono_duration<std::chrono::hours> : std::true_type {};
+template<>
+struct is_chrono_duration<std::chrono::hours> : std::true_type
+{};
 
 // Trait to check if a type is a valid Output Stream
-template <typename T, typename = void>
-struct is_output_stream : std::false_type {};
+template<typename T, typename = void>
+struct is_output_stream : std::false_type
+{};
 
-template <typename T>
-struct is_output_stream<T, std::void_t<decltype(std::declval<T&>() << std::declval<long long>())>> : std::true_type {};
+template<typename T>
+struct is_output_stream<T, std::void_t<decltype(std::declval<T&>() << std::declval<long long>())>> : std::true_type
+{};
 
 //------------------------------------------------------------
 // class ImmutableTimer
 //------------------------------------------------------------
-template <typename ClockType,
-    typename std::enable_if<is_clock<ClockType>::value, int>::type = 0>
-class ImmutableTimer {
+template<typename ClockType, typename std::enable_if<is_clock<ClockType>::value, int>::type = 0>
+class ImmutableTimer
+{
 public:
-    ImmutableTimer() {
+    ImmutableTimer()
+    {
         startTime = ClockType::now();
     }
 
-    int64_t getElapsedTimeMs() const {
+    int64_t getElapsedTimeMs() const
+    {
         return std::chrono::duration_cast<std::chrono::milliseconds>(ClockType::now() - startTime).count();
     }
 
-    int64_t getElapsedTimeNs() const {
+    int64_t getElapsedTimeNs() const
+    {
         return std::chrono::duration_cast<std::chrono::nanoseconds>(ClockType::now() - startTime).count();
     }
 
-    template <typename DurationType, typename std::enable_if<is_chrono_duration<DurationType>::value, int>::type = 0>
-    DurationType getDuration() const {
+    template<typename DurationType, typename std::enable_if<is_chrono_duration<DurationType>::value, int>::type = 0>
+    DurationType getDuration() const
+    {
         return std::chrono::duration_cast<DurationType>(ClockType::now() - startTime);
     }
 
@@ -229,28 +257,33 @@ private:
 //------------------------------------------------------------
 // class ResettableTimer
 //------------------------------------------------------------
-template <typename ClockType,
-    typename std::enable_if<is_clock<ClockType>::value, int>::type = 0>
-class ResettableTimer {
+template<typename ClockType, typename std::enable_if<is_clock<ClockType>::value, int>::type = 0>
+class ResettableTimer
+{
 public:
-    ResettableTimer() {
+    ResettableTimer()
+    {
         startTime = ClockType::now();
     }
 
-    void reset() {
+    void reset()
+    {
         startTime = ClockType::now();
     }
 
-    int64_t getElapsedTimeMs() const {
+    int64_t getElapsedTimeMs() const
+    {
         return std::chrono::duration_cast<std::chrono::milliseconds>(ClockType::now() - startTime).count();
     }
 
-    int64_t getElapsedTimeNs() const {
+    int64_t getElapsedTimeNs() const
+    {
         return std::chrono::duration_cast<std::chrono::nanoseconds>(ClockType::now() - startTime).count();
     }
 
-    template <typename DurationType, typename std::enable_if<is_chrono_duration<DurationType>::value, int>::type = 0>
-    DurationType getDuration() const {
+    template<typename DurationType, typename std::enable_if<is_chrono_duration<DurationType>::value, int>::type = 0>
+    DurationType getDuration() const
+    {
         return std::chrono::duration_cast<DurationType>(ClockType::now() - startTime);
     }
 
@@ -261,23 +294,28 @@ private:
 //------------------------------------------------------------
 // class ScopePrintTimer
 //------------------------------------------------------------
-template <typename ClockType,
+template<
+    typename ClockType,
     typename DurationType,
     typename OutputStreamType = std::ostream,
-    typename std::enable_if<is_clock<ClockType>::value&&
-    is_chrono_duration<DurationType>::value&&
-    is_output_stream<OutputStreamType>::value, int>::type = 0>
-class ScopePrintTimer {
+    typename std::enable_if<
+        is_clock<ClockType>::value && is_chrono_duration<DurationType>::value
+            && is_output_stream<OutputStreamType>::value,
+        int>::type
+    = 0>
+class ScopePrintTimer
+{
 public:
-    ScopePrintTimer(const std::string& printoutPrefix, OutputStreamType& ostream = std::cout)
-        : _printoutPrefix(printoutPrefix),
-          _ostream(ostream)
+    ScopePrintTimer(const std::string& printoutPrefix, OutputStreamType& ostream = std::cout) :
+        _printoutPrefix(printoutPrefix), _ostream(ostream)
     {
         startTime = ClockType::now();
     }
 
-    ~ScopePrintTimer() {
-        _ostream << _printoutPrefix << std::chrono::duration_cast<DurationType>(ClockType::now() - startTime).count() << std::endl;
+    ~ScopePrintTimer()
+    {
+        _ostream << _printoutPrefix << std::chrono::duration_cast<DurationType>(ClockType::now() - startTime).count()
+                 << std::endl;
     }
 
 private:

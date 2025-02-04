@@ -3,10 +3,10 @@
 
 //-----------------------------------------------------
 // credential_utils.h
-// 
+//
 // A set of functions for quick and simple interaction
 // with the Windows Credential Manager.
-// 
+//
 // These implementations all default to generic usage
 // and only use local machine persistence.
 //-----------------------------------------------------
@@ -23,10 +23,11 @@
 namespace cpputils {
 namespace windows {
 
-const std::string ADV_API_DLL_NAME{ "Advapi32.dll" };
+const std::string ADV_API_DLL_NAME{"Advapi32.dll"};
 static SharedLibraryLoader dwmApiLibrary(ADV_API_DLL_NAME);
 
-struct Credential {
+struct Credential
+{
     std::string username;
     std::string credentialBlob;
 };
@@ -44,7 +45,7 @@ static bool writeCredential(std::string targetName, Credential credential)
     if (credential.username.length() > CRED_MAX_USERNAME_LENGTH) return false;
     if (credential.credentialBlob.size() > CRED_MAX_CREDENTIAL_BLOB_SIZE) return false;
 
-    _CREDENTIALA credentialStruct = { 0 };
+    _CREDENTIALA credentialStruct = {0};
     credentialStruct.Flags;
     credentialStruct.Type = CRED_TYPE_GENERIC;
     credentialStruct.TargetName = (LPSTR)targetName.c_str();
@@ -58,10 +59,7 @@ static bool writeCredential(std::string targetName, Credential credential)
     credentialStruct.TargetAlias;
     credentialStruct.UserName = (LPSTR)credential.username.c_str();
 
-    BOOL result = CredWriteA(
-        &credentialStruct,
-        NULL
-    );
+    BOOL result = CredWriteA(&credentialStruct, NULL);
 
     return result == TRUE;
 }
@@ -76,12 +74,7 @@ static Credential readCredential(std::string targetName)
     if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return Credential();
 
     PCREDENTIALA pCredential = nullptr;
-    BOOL result = CredReadA(
-        (LPSTR)targetName.c_str(),
-        CRED_TYPE_GENERIC,
-        NULL,
-        &pCredential
-    );
+    BOOL result = CredReadA((LPSTR)targetName.c_str(), CRED_TYPE_GENERIC, NULL, &pCredential);
 
     if (result == FALSE) return Credential();
 
@@ -106,16 +99,12 @@ static bool deleteCredential(std::string targetName)
 {
     if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return false;
 
-    BOOL result = CredDeleteA(
-        (LPSTR)targetName.c_str(),
-        CRED_TYPE_GENERIC,
-        NULL
-    );
+    BOOL result = CredDeleteA((LPSTR)targetName.c_str(), CRED_TYPE_GENERIC, NULL);
 
     return result == TRUE;
 }
 
-} // End windows namespace
-} // End cpputils namespace
+} // namespace windows
+} // namespace cpputils
 
 #endif
