@@ -29,7 +29,8 @@ std::string OpenWindowsFolderDialogue(bool printErrors = false)
     // Initialize COM
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (FAILED(hr)) {
-        if (printErrors) std::cerr << "Failed to initialize COM." << std::endl;
+        if (printErrors)
+            std::cerr << "Failed to initialize COM." << std::endl;
         return "";
     }
 
@@ -67,7 +68,8 @@ std::string OpenWindowsFolderDialogue(bool printErrors = false)
     CoUninitialize();
 
     if (FAILED(hr)) {
-        if (printErrors) std::cerr << "Failed to open folder dialog." << std::endl;
+        if (printErrors)
+            std::cerr << "Failed to open folder dialog." << std::endl;
         return "";
     }
 

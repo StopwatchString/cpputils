@@ -41,9 +41,12 @@ struct Credential
 //-----------------------------------------------------
 static bool writeCredential(std::string targetName, Credential credential)
 {
-    if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return false;
-    if (credential.username.length() > CRED_MAX_USERNAME_LENGTH) return false;
-    if (credential.credentialBlob.size() > CRED_MAX_CREDENTIAL_BLOB_SIZE) return false;
+    if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH)
+        return false;
+    if (credential.username.length() > CRED_MAX_USERNAME_LENGTH)
+        return false;
+    if (credential.credentialBlob.size() > CRED_MAX_CREDENTIAL_BLOB_SIZE)
+        return false;
 
     _CREDENTIALA credentialStruct = {0};
     credentialStruct.Flags;
@@ -71,12 +74,14 @@ static bool writeCredential(std::string targetName, Credential credential)
 //-----------------------------------------------------
 static Credential readCredential(std::string targetName)
 {
-    if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return Credential();
+    if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH)
+        return Credential();
 
     PCREDENTIALA pCredential = nullptr;
     BOOL result = CredReadA((LPSTR)targetName.c_str(), CRED_TYPE_GENERIC, NULL, &pCredential);
 
-    if (result == FALSE) return Credential();
+    if (result == FALSE)
+        return Credential();
 
     Credential credential;
 
@@ -97,7 +102,8 @@ static Credential readCredential(std::string targetName)
 //-----------------------------------------------------
 static bool deleteCredential(std::string targetName)
 {
-    if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH) return false;
+    if (targetName.length() > CRED_MAX_GENERIC_TARGET_NAME_LENGTH)
+        return false;
 
     BOOL result = CredDeleteA((LPSTR)targetName.c_str(), CRED_TYPE_GENERIC, NULL);
 

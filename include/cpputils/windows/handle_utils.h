@@ -51,7 +51,9 @@ static HANDLE getSourceProcessHandleFromHwnd(HWND hWnd)
     DWORD threadId = GetWindowThreadProcessId(hWnd, lpdwProcessId);
 
     HANDLE hProcess = NULL;
-    if (lpdwProcessId != NULL) { hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, *lpdwProcessId); }
+    if (lpdwProcessId != NULL) {
+        hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, *lpdwProcessId);
+    }
 
     return hProcess;
 }
