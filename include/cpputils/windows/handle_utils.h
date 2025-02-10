@@ -1,3 +1,8 @@
+/**
+* @file handle_utils.h
+* @author Mason Speck
+*/
+
 #ifndef CPPUTILS_WINDOWS_HANDLE_UTILS_H
 #define CPPUTILS_WINDOWS_HANDLE_UTILS_H
 
@@ -7,6 +12,34 @@
 
 namespace cpputils {
 namespace windows {
+
+/**
+ * \brief RAII class to manage closing a Windows HANDLE automatically.
+ * 
+ * Cannot be copied, but supports move operations.
+ */
+class AutoHandle
+{
+public:
+    AutoHandle(HANDLE handle) : m_Handle(handle) {}
+    ~AutoHandle() { CloseHandle(m_Handle); }
+
+    // No copy
+    AutoHandle(const AutoHandle& other) = delete;
+    AutoHandle& operator=(const AutoHandle& other) = delete;
+
+    AutoHandle(AutoHandle&& other) noexcept : m_Handle(other.m_Handle) { other.m_Handle = nullptr; }
+    AutoHandle& operator=(AutoHandle&& other) noexcept
+    {
+        if (this != &other) {
+            m_Handle = other.m_Handle;
+            other.m_Handle = nullptr;
+        }
+    }
+
+private:
+    HANDLE m_Handle{NULL};
+};
 
 //-----------------------------------------------
 // duplicateHandle()
@@ -51,7 +84,9 @@ static HANDLE getSourceProcessHandleFromHwnd(HWND hWnd)
     DWORD threadId = GetWindowThreadProcessId(hWnd, lpdwProcessId);
 
     HANDLE hProcess = NULL;
-    if (lpdwProcessId != NULL) { hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, *lpdwProcessId); }
+    if (lpdwProcessId != NULL) {
+        hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, *lpdwProcessId);
+    }
 
     return hProcess;
 }
