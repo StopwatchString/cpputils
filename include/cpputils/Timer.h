@@ -155,9 +155,13 @@ private:
     const std::string _printoutPrefix;
 };
 
+} // namespace cpputils
+
 #else
 
     #include <type_traits>
+
+namespace cpputils {
 
 //------------------------------------------------------------
 // Type Traits for Constraints
@@ -303,8 +307,8 @@ private:
     const std::string _printoutPrefix;
 };
 
-#endif
+} // namespace cpputils
 
-} // End cpputils namespace
+#endif
 
 #endif // End CPPUTILS_TIMER_H
