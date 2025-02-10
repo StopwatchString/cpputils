@@ -60,7 +60,9 @@ public:
     {
         void* funcPointer = nullptr;
 #if defined(_WIN32)
-        if (hLibModule != NULL) { funcPointer = GetProcAddress(hLibModule, functionName); }
+        if (hLibModule != NULL) {
+            funcPointer = GetProcAddress(hLibModule, functionName);
+        }
 #elif defined(__linux__)
             // TODO:: Linux Implementation
 #endif

@@ -35,7 +35,8 @@ static bool setWindowDarkMode(HWND hWnd, bool darkMode)
         DwmSetWindowAttributePtr
             = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiLibrary.loadFunctionPointer("DwmSetWindowAttribute");
     }
-    if (!DwmSetWindowAttributePtr) return false;
+    if (!DwmSetWindowAttributePtr)
+        return false;
 
     BOOL value = darkMode ? TRUE : FALSE;
     HRESULT hr = DwmSetWindowAttributePtr(
@@ -56,7 +57,8 @@ static bool setWindowRoundedCorners(HWND hWnd, bool rounded)
         DwmSetWindowAttributePtr
             = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiLibrary.loadFunctionPointer("DwmSetWindowAttribute");
     }
-    if (!DwmSetWindowAttributePtr) return false;
+    if (!DwmSetWindowAttributePtr)
+        return false;
 
     DWM_WINDOW_CORNER_PREFERENCE value = rounded ? DWMWCP_ROUND : DWMWCP_DONOTROUND;
     HRESULT hr = DwmSetWindowAttributePtr(
@@ -77,7 +79,8 @@ static bool setWindowCloaked(HWND hWnd, bool cloaked)
         DwmSetWindowAttributePtr
             = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiLibrary.loadFunctionPointer("DwmSetWindowAttribute");
     }
-    if (!DwmSetWindowAttributePtr) return false;
+    if (!DwmSetWindowAttributePtr)
+        return false;
 
     BOOL value = cloaked ? TRUE : FALSE;
     HRESULT hr = DwmSetWindowAttributePtr(
@@ -98,7 +101,8 @@ static bool setWindowTitlebarTransparent(HWND hWnd, bool transparent)
         DwmSetWindowAttributePtr
             = (PFN_DWM_SET_WINDOW_ATTRIBUTE)dwmApiLibrary.loadFunctionPointer("DwmSetWindowAttribute");
     }
-    if (!DwmSetWindowAttributePtr) return false;
+    if (!DwmSetWindowAttributePtr)
+        return false;
 
     DWM_SYSTEMBACKDROP_TYPE value = transparent ? DWMSBT_TRANSIENTWINDOW : DWMSBT_MAINWINDOW;
     HRESULT hr = DwmSetWindowAttributePtr(
