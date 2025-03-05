@@ -1,0 +1,11 @@
+root = true
+
+[*]
+indent_style = space # space | tab
+indent_size = 4
+tab_width = 4
+charset = utf-8      # utf-8 | utf-8-bom | utf-16be | utf-16le | latin1
+end_of_line = lf     # lf | crlf | cr
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 120

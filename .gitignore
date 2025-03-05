@@ -1,12 +1,6 @@
-﻿StreamCopier/x64
-StreamCopier/StreamCopier
-StreamCopier/.vs
-StreamCopier/deps/opencv_videoio_ffmpeg4100_64.dll
-StreamCopier/deps/opencv_world4100.dll
-StreamCopier/deps/opencv_world4100.lib
-StreamCopier/deps/opencv_world4100d.dll
-StreamCopier/deps/opencv_world4100d.lib
-Producer/.vs
-Producer/Producer
-Producer/x64
-docs
+# Build artefacts
+build/
+
+# Docs
+docs/html/
+docs/latex/

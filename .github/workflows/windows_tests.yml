@@ -1,0 +1,33 @@
+name: Windows Tests
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+  workflow_dispatch:
+
+concurrency:
+  group: windows_tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure CMake (Release mode)
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build the project
+        run: cmake --build build --config Release
+
+      - name: Run Tests
+        run: |
+          cd build
+          ctest --output-on-failure -C Release

@@ -1,42 +1,36 @@
-# cpputils
+# Pitchfork Layout Template
 
-A collection of header-only implementation includes to help speed up development. The existing utilities mostly focus on OS interaction, but more general tools will eventually pop up.
+![Linux Tests](https://github.com/stopwatchstring/pitchfork-template/actions/workflows/linux_tests.yml/badge.svg)
+![Windows Tests](https://github.com/stopwatchstring/pitchfork-template/actions/workflows/windows_tests.yml/badge.svg)
+![Docs](https://github.com/stopwatchstring/pitchfork-template/actions/workflows/doxygen.yml/badge.svg)
 
-## Implementation Selection
+## Description
 
-When relevant, the implementation will be selected through the use of the ```__cplusplus``` preprocessor macro. Notably, MSVC does not by default support this preprocessor macro and defines its own, for some reason. In order to enable it, you must add the ```/Zc:__cplusplus``` option to your build to enable this option being set. Otherwise your implementation will default to the version with the lowest version requirements (or not work at all out of the box). Blame Microsoft.
+A C++ CMake project template mostly based on the [pitchfork](https://joholl.github.io/pitchfork-website/) template schema, with some opinionated additional specifications.
 
-## Table of Contents
+The goal of this template is to provide a consistent framework for generating exports, documentation, and testing around any C++ project. I created it out of frustration with managing a myriad of different methods between my own libraries. Adherence to this template asserts these facts to be true:
 
-[Interprocess Mutex](#cpputilsinterprocessmutexh)
+- Private headers, all source files, and all test files are stored adjacently within ```/src```
+- Public headers which could be included in an external project are stored within ```/include```
+- Namespaces are doubly represented by folder structure
+- All external code and dependencies is stored in ```/external```, no exceptions. Given a project ```PROJECT```, its contents are stored under ```external/PROJECT``` such that its inclusion in the primary ```CMakeLists.txt``` is never different than ```add_subdirectory(external/PROJECT)```. If required, an 'adapter' ```CMakeLists.txt``` may be created such that the real project is stored in ```external/PROJECT/PROJECT``` while files required for making an adapter live in the folder above.
+- Google Test is the test framework
+- ```CMakeLists.txt``` will generate *at least* 2 targets native to this project. ```TARGET_NAME_lib```, and ```TARGET_NAME_tests```. If the project exports an executable as well, then ```TARGET_NAME``` will be a 3rd target. When linking against the primary project of this template, you will link against ```TARGET_NAME_lib```, which will include public headers.
+- If an executable target is able to be generated, then its entry point is contained in ```src/main/main.cpp``` (this isolates ```main.cpp``` from the rest of the source tree in terms of relative pathing)
+- All code files have documentation adhering to Doxygen codegen specifications (chosen subset yet to be determined). Build scripts are provided to generate modern Sphinx documentation. This documentation style derived from [this article](https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/).
 
-[InterprocessMutexLockGuard](#cpputilsinterprocessmutexlockguardh)
+## Usage
 
-## cpputils/InterprocessMutex.h
+### Tools Needed
+- [CMake](https://cmake.org/download/)
+- [Doxygen](https://www.doxygen.nl/download.html)
+- [Python](https://www.python.org/downloads/)
+    - [Sphinx](https://www.sphinx-doc.org/en/master/usage/installation.html)
+        - [Read-The-Docs Theme](https://sphinx-themes.org/sample-sites/sphinx-rtd-theme/) > pip install sphinx_rtd_theme
+        - [Breathe](https://www.breathe-doc.org/) > pip install breathe
 
-## cpputils/InterprocessMutexLockGuard.h
+In ```CMakeLists.txt```, change ```TargetName``` and ```ProjectName``` to align with the project being created.
 
-## cpputils/SharedLibraryLoader.h
+In ```docs/Doxyfile``` change ```PROJECT_NAME``` to align with project being created.
 
-## cpputils/SharedMemory.h
-
-A RAII implementation of an OS interprocess shared memory datatype. Uses a key and a 64bit uint to open a mapped piece of shared memory in either Windows or Linux. Interface:
-
-| Function                                                 | Utility                                                                                                                                                      |
-|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ```SharedMemory(const std::string& key, size_t bytes)``` | Constructor. Copy and move constructors disabled.                                                                                                            |
-| ```void* data()```                                       | Returns a copy of the pointer to the underlying OS shared memory. If ```data() == nullptr```, then allocation of the OS shared memory has failed.            |
-| ```size_t size()```                                      | Returns the requested size passed to the object on creation. Does not change, even if allocation failed. Nullptr check data() for validity checking instead. |
-
-## cpputils/windows/handle_utils.h
-
-## cpputils/windows/dwm.h
-
-An interface into the Desktop Window Management (DWM) library in windows. Handles importing DWM functions for you.
-
-| Function                                                        | Utility                                                                                                                                                                       |
-| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ```setWindowDarkMode(HWND hWnd, bool darkMode)```               | Sets a window's ```DWMWA_USE_IMMERSIVE_DARK_MODE``` flag to ```TRUE``` or ```FALSE```.                                                                                        |
-| ```setWindowRoundedCorners(HWND hWnd, bool rounded)```          | Sets a window's ```DWMWA_WINDOW_CORNER_PREFERENCE``` attribute to either ```DWMWCP_ROUND``` or ```DWMWCP_DONOTROUND```                                                        |
-| ```setWindowCloaked(HWND hWnd, bool cloaked)```                 | Sets a window's ```DWMWA_CLOAK``` attribute to ```TRUE``` or ```FALSE```. When a window is cloaked both the window and task bar icon for the window are hidden from the user. |
-| ```setWindowTitlebarTransparent(HWND hWnd, bool transparent)``` | Sets a window's ```DWMWA_SYSTEMBACKDROP_TYPE``` attribute to ```DWMSBT_TRANSIENTWINDOW``` or ```DWMSBT_MAINWINDOW```.                                                         |
+Any source files in ```/include``` and ```/src``` are included for the sake of example, and should be deleted.

@@ -1,0 +1,38 @@
+name: Doxygen
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to main
+  workflow_dispatch:
+
+concurrency:
+  group: doxygen-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensure full history for branch switching
+
+      - name: Install Doxygen
+        run: sudo apt-get install -y doxygen graphviz
+
+      - name: Generate Documentation
+        run: |
+          cd docs
+          doxygen Doxyfile
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/html
