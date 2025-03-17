@@ -28,19 +28,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SOURCES)
 set(PRIVATE_HEADERS)
 set(PUBLIC_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/cpputils/InterprocessMutex.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/InterprocessMutexLockGuard.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/languageChecking.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/SharedLibraryLoader.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/SharedMemory.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/Timer.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/WaitFreeCounter.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/WriteSafeLockFree.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/WriteUnsafeLockFree.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/windows/credential_utils.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/windows/dwm.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/windows/handle_utils.h
-    ${CMAKE_SOURCE_DIR}/include/cpputils/windows/selectors.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/InterprocessMutex.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/InterprocessMutexLockGuard.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/languageChecking.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/SharedLibraryLoader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/SharedMemory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/Timer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/WaitFreeCounter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/WriteSafeLockFree.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/WriteUnsafeLockFree.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/credential_utils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/dwm.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/handle_utils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/selectors.h
 )
 # List all GTest files here
 # Generally every hpp/cpp combo should have a matching [filename].test.cpp.
@@ -55,7 +55,7 @@ set(TEST_SOURCES
 # share the same artefacts
 add_library(${TARGET_NAME}_lib INTERFACE ${PUBLIC_HEADERS})
 target_include_directories(${TARGET_NAME}_lib
-    INTERFACE ${CMAKE_SOURCE_DIR}/include
+    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # ------------- PROJECT EXECUTABLE -------------
