@@ -46,7 +46,7 @@ set(PUBLIC_HEADERS
 # Generally every hpp/cpp combo should have a matching [filename].test.cpp.
 # Header-only should also receive test files.
 set(TEST_SOURCES
-    ${CMAKE_SOURCE_DIR}/tests/cpputils/SharedMemory.test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/cpputils/SharedMemory.test.cpp
 )
 
 # -------------- PROJECT LIBRARY --------------
