@@ -1,0 +1,21 @@
+{
+    "version": 3,
+    "configurePresets": [
+      {
+        "name": "default",
+        "generator": "Visual Studio 17 2022",
+        "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+            // CMAKE Core
+            "BUILD_SHARED_LIBS":          "OFF",
+            // cpputils
+            "cpputils_BUILD_EXAMPLES":           "ON",
+            "cpputils_BUILD_TESTS":              "ON",
+            // GoogleTest
+            "GTEST_HAS_ABSL":               "OFF",
+            "BUILD_GMOCK":                  "ON",
+            "INSTALL_GTEST":                "OFF"
+        }
+      }
+    ]
+  }

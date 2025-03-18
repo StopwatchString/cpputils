@@ -1,0 +1,2 @@
+cd ..
+cmake --preset="default"
