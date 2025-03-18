@@ -57,6 +57,7 @@ add_library(${TARGET_NAME}_lib INTERFACE ${PUBLIC_HEADERS})
 target_include_directories(${TARGET_NAME}_lib
     INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+set_property(TARGET ${TARGET_NAME}_lib PROPERTY FOLDER "${FOLDER_TARGET}")
 
 # ------------- PROJECT EXECUTABLE -------------
 if (${TARGET_NAME}_BUILD_EXAMPLES)
