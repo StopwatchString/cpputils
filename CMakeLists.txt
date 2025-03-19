@@ -14,11 +14,8 @@ option(${TARGET_NAME}_BUILD_EXAMPLES "Enable building examples for ${TARGET_NAME
 if (PROJECT_IS_TOP_LEVEL)
     set(FOLDER_TARGET "")
 else()
-    set(FOLDER_TARGET "${TARGET_NAME}/")
+    set(FOLDER_TARGET "external/${TARGET_NAME}/")
 endif()
-
-# ------ DEFAULT OPTIONS FOR SUBPROJECTS ------
-# Subprojects added directly to this project should have their options set here
 
 # Environment settings
 set(CMAKE_CXX_STANDARD 20)
