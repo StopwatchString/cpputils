@@ -1,7 +1,7 @@
 #ifndef CPPUTILS_TIMER_H
 #define CPPUTILS_TIMER_H
 
-#include "languageChecking.h"
+#define LANGUAGE_VERSION(version) (__cplusplus >= version || _MSVC_LANG >= version)
 
 #include <chrono>
 #include <iostream>
