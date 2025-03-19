@@ -6,8 +6,6 @@ var annotated_dup =
         [ "Credential", "structcpputils_1_1windows_1_1Credential.html", null ]
       ] ],
       [ "ImmutableTimer", "classcpputils_1_1ImmutableTimer.html", null ],
-      [ "InterprocessMutex", "classcpputils_1_1InterprocessMutex.html", null ],
-      [ "InterprocessMutexLockGuard", "classcpputils_1_1InterprocessMutexLockGuard.html", null ],
       [ "is_chrono_duration", "structcpputils_1_1is__chrono__duration.html", null ],
       [ "is_chrono_duration< std::chrono::hours >", "structcpputils_1_1is__chrono__duration_3_01std_1_1chrono_1_1hours_01_4.html", null ],
       [ "is_chrono_duration< std::chrono::microseconds >", "structcpputils_1_1is__chrono__duration_3_01std_1_1chrono_1_1microseconds_01_4.html", null ],
@@ -22,9 +20,7 @@ var annotated_dup =
       [ "ResettableTimer", "classcpputils_1_1ResettableTimer.html", null ],
       [ "ScopePrintTimer", "classcpputils_1_1ScopePrintTimer.html", null ],
       [ "SharedLibraryLoader", "classcpputils_1_1SharedLibraryLoader.html", null ],
-      [ "SharedMemory", "classcpputils_1_1SharedMemory.html", null ],
-      [ "WriteSafeLockFree", "classcpputils_1_1WriteSafeLockFree.html", null ],
-      [ "WriteUnsafeLockFree", "classcpputils_1_1WriteUnsafeLockFree.html", null ]
+      [ "SharedMemory", "classcpputils_1_1SharedMemory.html", null ]
     ] ],
     [ "Counter", "classCounter.html", null ]
 ];
