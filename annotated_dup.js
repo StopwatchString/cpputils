@@ -1,6 +1,9 @@
 var annotated_dup =
 [
     [ "cpputils", null, [
+      [ "win", null, [
+        [ "AlignedBuffer", "structcpputils_1_1win_1_1AlignedBuffer.html", null ]
+      ] ],
       [ "windows", null, [
         [ "AutoHandle", "classcpputils_1_1windows_1_1AutoHandle.html", null ],
         [ "Credential", "structcpputils_1_1windows_1_1Credential.html", null ]
