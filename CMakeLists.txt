@@ -33,6 +33,8 @@ set(PUBLIC_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/dwm.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/handle_utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/selectors.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/simpleDirectIo.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/AlignedBuffer.h
 )
 # List all GTest files here
 # Generally every hpp/cpp combo should have a matching [filename].test.cpp.
@@ -45,9 +47,10 @@ set(TEST_SOURCES
 # Create linkable library from project files
 # We break this into a library so that the main exe and test project
 # share the same artefacts
-add_library(${TARGET_NAME}_lib INTERFACE ${PUBLIC_HEADERS})
+add_library(${TARGET_NAME}_lib OBJECT ${PUBLIC_HEADERS})
+set_target_properties(${TARGET_NAME}_lib PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${TARGET_NAME}_lib
-    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 set_property(TARGET ${TARGET_NAME}_lib PROPERTY FOLDER "${FOLDER_TARGET}")
 
