@@ -39,5 +39,6 @@ var NAVTREEINDEX0 =
 "structcpputils_1_1is__output__stream.html":[0,0,0,12],
 "structcpputils_1_1is__output__stream_3_01T_00_01std_1_1void__t_3_01decltype_07std_1_1declval_3_05b196cd4bef15d81f60bd9cca0daa76f.html":[0,0,0,13],
 "structcpputils_1_1win_1_1AlignedBuffer.html":[0,0,0,0,0],
+"structcpputils_1_1win_1_1ReadContexts.html":[0,0,0,0,1],
 "structcpputils_1_1windows_1_1Credential.html":[0,0,0,1,1]
 };
