@@ -5,6 +5,7 @@
 
 #include <filesystem>
 #include <optional>
+#include <array>
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -13,6 +14,14 @@
 
 namespace cpputils {
 namespace win {
+    constexpr size_t MAXIMUM_SUBREADS = 64;
+
+    template<size_t S>
+    struct ReadContexts {
+        std::array<OVERLAPPED, S> overlapped{};
+        std::array<HANDLE, S> event{ NULL };
+    };
+
     std::optional<STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR> getAlignmentInfoForFile(const std::filesystem::path& file)
     {
         if (!std::filesystem::is_regular_file(file)) return std::nullopt;
@@ -58,7 +67,7 @@ namespace win {
         return alignmentDescriptor;
     }
 
-    AlignedBuffer directFileToBuffer(const std::filesystem::path& file)
+    AlignedBuffer directFileToBuffer(const std::filesystem::path& file, size_t subreads = 1)
     {
         std::optional<STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR> alignmentInfoOpt = getAlignmentInfoForFile(file);
         if (!alignmentInfoOpt.has_value()) return AlignedBuffer();
@@ -71,7 +80,7 @@ namespace win {
             FILE_SHARE_READ,
             NULL,
             OPEN_EXISTING,
-            FILE_FLAG_NO_BUFFERING,
+            FILE_FLAG_NO_BUFFERING | FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN,
             NULL
         );
 
@@ -85,7 +94,7 @@ namespace win {
         }
 
         size_t diskAlignment = alignmentInfo.BytesPerPhysicalSector;
-        size_t alignedBufferSize = fileSize.QuadPart + (diskAlignment - (fileSize.QuadPart % diskAlignment));
+        size_t alignedBufferSize = fileSize.QuadPart + ((diskAlignment - (fileSize.QuadPart % diskAlignment)) % diskAlignment);
         AlignedBuffer alignedBuffer(alignedBufferSize, diskAlignment);
 
         if (alignedBuffer.buf == nullptr) {
@@ -93,13 +102,69 @@ namespace win {
             return AlignedBuffer();
         }
 
-        DWORD bytesRead = 0;
-        bResult = ReadFile(hFile, alignedBuffer.buf, alignedBuffer.size, &bytesRead, NULL);
-        if (!bResult) {
-            CloseHandle(hFile);
-            return AlignedBuffer();
+        size_t maxDiskSubreads = alignedBufferSize / diskAlignment;
+        subreads = std::min(subreads, std::min(maxDiskSubreads, MAXIMUM_SUBREADS));
+
+        // Figure out aligned subsectors to read. Final sector will usually not divide cleanly, so calculate
+        // 'subsector' size and use it for final sector if it's greater than 0.
+        size_t subreadSectorSize = (alignedBufferSize / subreads) + ((diskAlignment - ((alignedBufferSize / subreads) % diskAlignment)) % diskAlignment);
+        size_t endcapSectorSize = alignedBufferSize % subreadSectorSize;
+
+        ReadContexts<MAXIMUM_SUBREADS> readContexts{};
+
+        for (size_t i = 0; i < subreads - 1; i++) {
+            size_t offset = i * subreadSectorSize;
+            readContexts.overlapped[i].Offset = static_cast<DWORD>(offset & 0xFFFFFFFF);
+            readContexts.overlapped[i].OffsetHigh = static_cast<DWORD>((offset >> 32) & 0xFFFFFFFF);
+
+            HANDLE event = CreateEvent(NULL, TRUE, FALSE, NULL);
+            readContexts.overlapped[i].hEvent = event;
+            readContexts.event[i] = event;
+
+            ReadFile(
+                hFile,
+                (char*)alignedBuffer.buf + offset,
+                subreadSectorSize,
+                nullptr,
+                &readContexts.overlapped[i]
+            );
         }
 
+        // Endcap sector
+        size_t endcapOffset = (subreads - 1) * subreadSectorSize;
+        size_t endcapReadSize = endcapSectorSize > 0 ? endcapSectorSize : subreadSectorSize;
+        readContexts.overlapped[subreads - 1].Offset = static_cast<DWORD>(endcapOffset & 0xFFFFFFFF);
+        readContexts.overlapped[subreads - 1].OffsetHigh = static_cast<DWORD>((endcapOffset >> 32) & 0xFFFFFFFF);
+
+        HANDLE event = CreateEvent(NULL, TRUE, FALSE, NULL);
+        readContexts.overlapped[subreads - 1].hEvent = event;
+        readContexts.event[subreads - 1] = event;
+        ReadFile(
+            hFile,
+            (char*)alignedBuffer.buf + endcapOffset,
+            endcapReadSize,
+            nullptr,
+            &readContexts.overlapped[subreads - 1]
+        );
+
+        WaitForMultipleObjects(static_cast<DWORD>(subreads), readContexts.event.data(), TRUE, INFINITE);
+
+        bool successful = true;
+
+        // Check each read result
+        for (size_t i = 0; i < subreads; i++) {
+            DWORD transferred = 0;
+
+            successful &= GetOverlappedResult(hFile, &readContexts.overlapped[i], &transferred, FALSE);
+
+            CloseHandle(readContexts.event[i]);
+        }
+
+        if (!successful) {
+            std::cout << "Not successful" << std::endl;
+        }
+
+        CloseHandle(hFile);
         return alignedBuffer;
     }
 
