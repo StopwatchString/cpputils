@@ -155,6 +155,53 @@ private:
     const std::string _printoutPrefix;
 };
 
+//------------------------------------------------------------
+// class FramerateTimer
+//------------------------------------------------------------
+template<Clock clockType, size_t sampleCount>
+class FramerateTimer
+{
+public:
+    FramerateTimer()
+        : timingsSum(std::chrono::nanoseconds(0)),
+          index(0)
+    {
+        lastMeasuredTime = clockType::now();
+    }
+
+    void reset()
+    {
+        lastMeasuredTime = clockType::now();
+        timings.fill(std::chrono::nanoseconds(0));
+    }
+
+    void markFrame()
+    {
+        typename clockType::time_point frameTime = clockType::now();
+        std::chrono::nanoseconds elapsedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(frameTime - lastMeasuredTime);
+
+        timingsSum -= timings[index];
+        timings[index] = elapsedTime;
+        timingsSum += timings[index];
+        index = (index + 1) % sampleCount;
+
+        lastMeasuredTime = frameTime;
+    }
+
+    double getFramerate() const
+    {
+        const double avgTimingNs = (double)timingsSum.count() / sampleCount;
+        const double avgTimingS = avgTimingNs / 1'000'000'000;
+        return 1 / avgTimingS;
+    }
+
+private:
+    clockType::time_point lastMeasuredTime{};
+    std::array<std::chrono::nanoseconds, sampleCount> timings{std::chrono::nanoseconds(0)};
+    size_t index{ 0 };
+    std::chrono::nanoseconds timingsSum;
+};
+
 } // namespace cpputils
 
 #else
