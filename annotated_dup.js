@@ -2,13 +2,13 @@ var annotated_dup =
 [
     [ "cpputils", null, [
       [ "win", null, [
-        [ "AlignedBuffer", "structcpputils_1_1win_1_1AlignedBuffer.html", null ],
         [ "ReadContexts", "structcpputils_1_1win_1_1ReadContexts.html", null ]
       ] ],
       [ "windows", null, [
         [ "AutoHandle", "classcpputils_1_1windows_1_1AutoHandle.html", null ],
         [ "Credential", "structcpputils_1_1windows_1_1Credential.html", null ]
       ] ],
+      [ "AlignedBuffer", "structcpputils_1_1AlignedBuffer.html", null ],
       [ "ImmutableTimer", "classcpputils_1_1ImmutableTimer.html", null ],
       [ "is_chrono_duration", "structcpputils_1_1is__chrono__duration.html", null ],
       [ "is_chrono_duration< std::chrono::hours >", "structcpputils_1_1is__chrono__duration_3_01std_1_1chrono_1_1hours_01_4.html", null ],

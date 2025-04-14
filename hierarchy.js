@@ -1,6 +1,6 @@
 var hierarchy =
 [
-    [ "cpputils::win::AlignedBuffer", "structcpputils_1_1win_1_1AlignedBuffer.html", null ],
+    [ "cpputils::AlignedBuffer", "structcpputils_1_1AlignedBuffer.html", null ],
     [ "cpputils::windows::AutoHandle", "classcpputils_1_1windows_1_1AutoHandle.html", null ],
     [ "Counter", "classCounter.html", null ],
     [ "cpputils::windows::Credential", "structcpputils_1_1windows_1_1Credential.html", null ],
