@@ -29,12 +29,12 @@ set(PUBLIC_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/SharedMemory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/Timer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/WaitFreeCounter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/Alignment.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/credential_utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/dwm.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/handle_utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/selectors.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/simpleDirectIo.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/AlignedBuffer.h
 )
 # List all GTest files here
 # Generally every hpp/cpp combo should have a matching [filename].test.cpp.

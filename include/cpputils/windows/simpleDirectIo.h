@@ -1,11 +1,12 @@
 #ifndef CPPUTILS_WINDOWS_SIMPLE_DIRECT_IO_H
 #define CPPUTILS_WINDOWS_SIMPLE_DIRECT_IO_H
 
-#include "cpputils/windows/AlignedBuffer.h"
+#include "cpputils/Alignment.h"
 
 #include <filesystem>
 #include <optional>
 #include <array>
+#include <iostream>
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -67,7 +68,7 @@ namespace win {
         return alignmentDescriptor;
     }
 
-    AlignedBuffer directFileToBuffer(const std::filesystem::path& file, size_t subreads = 1)
+    AlignedBuffer directFileToBuffer(const std::filesystem::path& file, size_t subreads = 1, bool nullTerminate = false)
     {
         std::optional<STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR> alignmentInfoOpt = getAlignmentInfoForFile(file);
         if (!alignmentInfoOpt.has_value()) return AlignedBuffer();
@@ -161,10 +162,16 @@ namespace win {
         }
 
         if (!successful) {
-            std::cout << "Not successful" << std::endl;
+            std::cout << "File read for " << file.string() << " failed!" << std::endl;
         }
 
         CloseHandle(hFile);
+
+        if (nullTerminate && (fileSize.QuadPart % diskAlignment != 0) ) {
+            char* b = (char*)alignedBuffer.buf + fileSize.QuadPart;
+            *b = '\0';
+        }
+
         return alignedBuffer;
     }
 
