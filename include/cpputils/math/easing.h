@@ -23,10 +23,25 @@ namespace math {
         return x < 0.5 ? 2 * x * x : 1 - ((-2 * x + 2)*(-2 * x + 2)) / 2;
     }
 
-    enum class EasingFunc {
+    enum class EasingFuncType {
         LINEAR_INTERPOLATE,
         EASE_IN_OUT_QUAD
     };
+
+    template <FloatingPoint T>
+    EasingFunction<T> getEasingFunction(const EasingFuncType funcType) {
+        switch (funcType) {
+            case EasingFuncType::LINEAR_INTERPOLATE: {
+                return linearInterpolate;
+                break;
+            }
+            case EasingFuncType::EASE_IN_OUT_QUAD: {
+                return easeInOutQuad;
+                break;
+            }
+        }
+        return linearInterpolate;
+    }
 }
 }
 

@@ -20,6 +20,7 @@ namespace math {
                 elapsed += dt;
                 if (elapsed > duration) {
                     completed = true;
+                    elapsed = duration;
                     val = endValue;
                 }
                 else {
