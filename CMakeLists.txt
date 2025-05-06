@@ -35,6 +35,9 @@ set(PUBLIC_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/handle_utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/selectors.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/simpleDirectIo.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/math/mathConcepts.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/math/easing.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/math/SmoothValue.h
 )
 # List all GTest files here
 # Generally every hpp/cpp combo should have a matching [filename].test.cpp.
