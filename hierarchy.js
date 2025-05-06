@@ -15,6 +15,7 @@ var hierarchy =
     [ "cpputils::ScopePrintTimer< ClockType, DurationType, OutputStreamType, type >", "classcpputils_1_1ScopePrintTimer.html", null ],
     [ "cpputils::SharedLibraryLoader", "classcpputils_1_1SharedLibraryLoader.html", null ],
     [ "cpputils::SharedMemory", "classcpputils_1_1SharedMemory.html", null ],
+    [ "cpputils::math::SmoothValue< _ValType, _DurationType >", "classcpputils_1_1math_1_1SmoothValue.html", null ],
     [ "std::true_type", null, [
       [ "cpputils::is_chrono_duration< std::chrono::hours >", "structcpputils_1_1is__chrono__duration_3_01std_1_1chrono_1_1hours_01_4.html", null ],
       [ "cpputils::is_chrono_duration< std::chrono::microseconds >", "structcpputils_1_1is__chrono__duration_3_01std_1_1chrono_1_1microseconds_01_4.html", null ],

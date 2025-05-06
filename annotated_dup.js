@@ -1,6 +1,9 @@
 var annotated_dup =
 [
     [ "cpputils", null, [
+      [ "math", null, [
+        [ "SmoothValue", "classcpputils_1_1math_1_1SmoothValue.html", null ]
+      ] ],
       [ "win", null, [
         [ "ReadContexts", "structcpputils_1_1win_1_1ReadContexts.html", null ]
       ] ],
