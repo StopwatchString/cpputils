@@ -10,26 +10,7 @@
 #include <algorithm>
 
 #ifdef WIN32
-    #define NOMINMAX
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-
-    // Windows command prompt requires special init to enable colors in the terminal.
-    bool enableCommandPromptANSIColors() {
-        static bool windowsANSIColorsInit = false;
-        if (!windowsANSIColorsInit) {
-            HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-            if (hOut == INVALID_HANDLE_VALUE) return false;
-
-            DWORD dwMode = 0;
-            if (!GetConsoleMode(hOut, &dwMode)) return false;
-
-            // Enable the virtual terminal processing flag
-            dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-            windowsANSIColorsInit = SetConsoleMode(hOut, dwMode);
-        }
-        return windowsANSIColorsInit;
-    }
+#include "cpputils/windows/terminal.h"
 #endif
 
 namespace cpputils {
@@ -39,6 +20,9 @@ namespace cpputils {
     constexpr const char* ANSI_YELLOW = "\x1b[33m";
     constexpr const char* ANSI_RED =    "\x1b[31m";
     constexpr const char* ANSI_BLUE =   "\x1b[34m";
+    constexpr const char* ANSI_HIDE_CURSOR = "\x1b[?25l";
+    constexpr const char* ANSI_SHOW_CURSOR = "\x1b[?25h";
+    constexpr const char* ANSI_CLEAR_AND_CR = "\x1b[2K\r";
 
 struct RangeMeter
 {
@@ -50,9 +34,9 @@ struct RangeMeter
     double cautionPercent       { 0.4 };
     double warningPercent       { 0.7 };
 
-    int64_t rangeBarPips         { 50 };
+    int64_t rangeBarPips        { 50 };
     std::stringstream ss;
-    size_t printThreadSleepMs   { 100 };
+    size_t printThreadSleepMs   { 500 };
     bool printThreadRunFlag     { false };
     std::thread printThread;
 };
@@ -83,8 +67,8 @@ void printRangeMeter(RangeMeter& rangeMeter)
     int64_t empty = totalFilled > rangeMeter.rangeBarPips ? 0 : rangeMeter.rangeBarPips - totalFilled;
 
     // If we're at least half a percent away from max, then color
-    // the last pip blue. Otherwise due to truncation it will
-    // forever be a space.
+    // the last pip blue. Otherwise rounding on the percentages can
+    // stick it as a space or red indicator.
     if (currentPercent > (1.0 - 0.005)) {
         if (empty > 0) {
             empty = 0;
@@ -106,9 +90,8 @@ void printRangeMeter(RangeMeter& rangeMeter)
 
     rangeMeter.ss.clear();
     rangeMeter.ss
-        << '\r'
-        << rangeMeter.title << " "
-        << std::format("{:6.2f}", rangeMeter.current)
+        << ANSI_CLEAR_AND_CR
+        << rangeMeter.title
         << " "
         << std::format("{:3.2f}", rangeMeter.min)
         << "["
@@ -119,7 +102,9 @@ void printRangeMeter(RangeMeter& rangeMeter)
         << ANSI_RESET
         << std::string(empty, ' ')
         << "]"
-        << std::format("{:3.2f}", rangeMeter.max);
+        << std::format("{:3.2f}", rangeMeter.max)
+        << " "
+        << std::format("{:6.2f}", rangeMeter.current);
 
     std::cout << rangeMeter.ss.str();
 }
@@ -127,8 +112,8 @@ void printRangeMeter(RangeMeter& rangeMeter)
 RangeMeter createRangeMeter(const std::string_view title, const double min, const double max, const double cautionPercent = 0.4, const double warningPercent = 0.7)
 {
 #ifdef WIN32
-    if (!enableCommandPromptANSIColors()) {
-        std::cout << "cpputils::RangeMeter createRangeMeter() Warning- Failed to enable Windows CommandPrompt ANSI color output!" << std::endl;
+    if (!cpputils::windows::enableConsoleVirtualTerminalProcessing()) {
+        std::cout << "cpputils::RangeMeter createRangeMeter() Warning- Failed to enable Windows Virtual Terminal Processing!" << std::endl;
     }
 #endif
 
@@ -148,10 +133,12 @@ void startRangeMeterThread(RangeMeter& rangeMeter)
     if (!rangeMeter.printThread.joinable()) {
         rangeMeter.printThreadRunFlag = true;
         rangeMeter.printThread = std::thread([&rangeMeter](){
+            std::cout << ANSI_HIDE_CURSOR;
             while (rangeMeter.printThreadRunFlag) {
                 printRangeMeter(rangeMeter);
                 std::this_thread::sleep_for(std::chrono::milliseconds(rangeMeter.printThreadSleepMs));
             }
+            std::cout << ANSI_SHOW_CURSOR;
         });
     }
     else {
