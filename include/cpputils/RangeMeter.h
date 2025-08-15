@@ -23,6 +23,8 @@ namespace cpputils {
     constexpr const char* ANSI_HIDE_CURSOR = "\x1b[?25l";
     constexpr const char* ANSI_SHOW_CURSOR = "\x1b[?25h";
     constexpr const char* ANSI_CLEAR_AND_CR = "\x1b[2K\r";
+    constexpr const char* ANSI_ENTER_ALTERNATE_BUFFER = "\x1b[?1049h";
+    constexpr const char* ANSI_EXIT_ALTERNATE_BUFFER = "\x1b[?1049l";
 
 struct RangeMeter
 {
@@ -36,7 +38,7 @@ struct RangeMeter
 
     int64_t rangeBarPips        { 50 };
     std::stringstream ss;
-    size_t printThreadSleepMs   { 500 };
+    size_t printThreadSleepMs   { 50 };
     bool printThreadRunFlag     { false };
     std::thread printThread;
 };
@@ -112,9 +114,11 @@ void printRangeMeter(RangeMeter& rangeMeter)
 RangeMeter createRangeMeter(const std::string_view title, const double min, const double max, const double cautionPercent = 0.4, const double warningPercent = 0.7)
 {
 #ifdef WIN32
-    if (!cpputils::windows::enableConsoleVirtualTerminalProcessing()) {
+    if (!cpputils::windows::setConsoleVirtualTerminalProcessing(true)) {
         std::cout << "cpputils::RangeMeter createRangeMeter() Warning- Failed to enable Windows Virtual Terminal Processing!" << std::endl;
     }
+    cpputils::windows::setConsoleEOLWrapping(false);
+    //cpputils::windows::setConsoleDisableNewlineAutoReturn(true);
 #endif
 
     RangeMeter rangeMeter{};
