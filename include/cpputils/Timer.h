@@ -188,6 +188,13 @@ public:
         lastMeasuredTime = frameTime;
     }
 
+    double getFrametimeMs() const
+    {
+        const double avgTimingNs = (double)timingsSum.count() / sampleCount;
+        const double avgTimingMs = avgTimingNs / 1'000'000;
+        return avgTimingMs;
+    }
+
     double getFramerate() const
     {
         const double avgTimingNs = (double)timingsSum.count() / sampleCount;
