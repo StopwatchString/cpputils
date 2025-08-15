@@ -30,6 +30,7 @@ set(PUBLIC_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/Timer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/WaitFreeCounter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/Alignment.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/RangeMeter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/credential_utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/dwm.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cpputils/windows/handle_utils.h
