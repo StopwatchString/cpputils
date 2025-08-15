@@ -60,34 +60,18 @@ void printRangeMeter(RangeMeter& rangeMeter)
     const double redPercent = getPercentInRange(currentPercent, rangeMeter.warningPercent, 1.0);
 
     int64_t filledGreen = greenPercent * rangeMeter.rangeBarPips;
-    int64_t filledYellow = yellowPercent * rangeMeter.rangeBarPips;
-    int64_t filledRed = redPercent * rangeMeter.rangeBarPips;
+    int64_t filledYellow = std::round(yellowPercent * rangeMeter.rangeBarPips);
+    int64_t filledRed = std::round(redPercent * rangeMeter.rangeBarPips);
     int64_t filledBlue = 0;
 
     const int64_t totalFilled = filledGreen + filledYellow + filledRed;
 
     int64_t empty = totalFilled > rangeMeter.rangeBarPips ? 0 : rangeMeter.rangeBarPips - totalFilled;
 
-    // If we're at least half a percent away from max, then color
-    // the last pip blue. Otherwise rounding on the percentages can
-    // stick it as a space or red indicator.
-    if (currentPercent > (1.0 - 0.005)) {
-        if (empty > 0) {
-            empty = 0;
-        }
-        if (totalFilled == rangeMeter.rangeBarPips) {
-            if (filledRed > 0) {
-                filledRed--;
-            }
-            else if (filledYellow > 0) {
-                filledYellow--;
-            }
-            else {
-                filledGreen--;
-            }
-        }
-
-        filledBlue = 1;
+    // If the bar is full, make the last pip blue
+    if (empty == 0) {
+        filledRed--;
+        filledBlue++;
     }
 
     rangeMeter.ss.clear();
@@ -118,7 +102,6 @@ RangeMeter createRangeMeter(const std::string_view title, const double min, cons
         std::cout << "cpputils::RangeMeter createRangeMeter() Warning- Failed to enable Windows Virtual Terminal Processing!" << std::endl;
     }
     cpputils::windows::setConsoleEOLWrapping(false);
-    //cpputils::windows::setConsoleDisableNewlineAutoReturn(true);
 #endif
 
     RangeMeter rangeMeter{};
