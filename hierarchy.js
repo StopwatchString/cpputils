@@ -10,7 +10,7 @@ var hierarchy =
       [ "cpputils::is_output_stream< T, typename >", "structcpputils_1_1is__output__stream.html", null ]
     ] ],
     [ "cpputils::ImmutableTimer< ClockType, type >", "classcpputils_1_1ImmutableTimer.html", null ],
-    [ "cpputils::RangeMeter", "structcpputils_1_1RangeMeter.html", null ],
+    [ "cpputils::rangemeter::RangeMeter", "structcpputils_1_1rangemeter_1_1RangeMeter.html", null ],
     [ "cpputils::win::ReadContexts< S >", "structcpputils_1_1win_1_1ReadContexts.html", null ],
     [ "cpputils::ResettableTimer< ClockType, type >", "classcpputils_1_1ResettableTimer.html", null ],
     [ "cpputils::ScopePrintTimer< ClockType, DurationType, OutputStreamType, type >", "classcpputils_1_1ScopePrintTimer.html", null ],
