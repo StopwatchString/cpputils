@@ -238,6 +238,8 @@ void updateString(RangeMeter& rangeMeter)
     memset(rangeMeter.string.data() + rangeMeter.yellowPipsOffset, '=', filledYellow);
     memset(rangeMeter.string.data() + rangeMeter.redPipsOffset,    '=', filledRed);
     memset(rangeMeter.string.data() + rangeMeter.bluePipsOffset,   '=', filledBlue);
+
+    writeDoubleToStringWithOffset(rangeMeter.string, rangeMeter.currentValOffset, rangeMeter.current);
 }
 
 RangeMeter create(const std::string& title, const double min, const double max, const double yellowPercent = 0.4, const double redPercent = 0.7, const size_t pipsCount = 50)
