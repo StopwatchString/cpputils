@@ -286,10 +286,13 @@ void startThread(RangeMeter& rangeMeter)
         rangeMeter.printThread = std::thread([&rangeMeter]() {
             std::cout << ANSI_HIDE_CURSOR;
             while (rangeMeter.printThreadRunFlag) {
+                // MULTIRANGE
                 // Update range meter
                 updateString(rangeMeter);
 
 #ifdef _WIN32
+
+                cpputils::windows::clearConsoleBuffer(consoleScreenBuffer[currentIndex]);
 
                 DWORD charsWritten;
                 WriteConsole(consoleScreenBuffer[currentIndex], ANSI_CLEAR_AND_CR, ANSI_CLEAR_AND_CR_LEN, &charsWritten, NULL);

@@ -90,6 +90,36 @@ size_t getConsoleColumns()
     return 0; // no console
 }
 
+bool clearConsoleBuffer(HANDLE hConsole)
+{
+    if (hConsole == INVALID_HANDLE_VALUE) return false;
+
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
+        return false;
+
+    DWORD consoleSize = csbi.dwSize.X * csbi.dwSize.Y;
+    COORD homeCoord = { 0, 0 };
+    DWORD charsWritten;
+
+    // Fill with spaces
+    if (!FillConsoleOutputCharacter(hConsole, TEXT(' '),
+        consoleSize, homeCoord, &charsWritten))
+        return false;
+
+    // Reset attributes
+    if (!FillConsoleOutputAttribute(hConsole, csbi.wAttributes,
+        consoleSize, homeCoord, &charsWritten))
+        return false;
+
+    // Move cursor back to top-left
+    if (!SetConsoleCursorPosition(hConsole, homeCoord))
+        return false;
+
+    return true;
+}
+
+
 } // End windows
 } // End cpputils
 
